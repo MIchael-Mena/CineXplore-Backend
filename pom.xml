@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>FIUBA</groupId>
-	<artifactId>CineXplore</artifactId>
+	<artifactId>cinexplore-backend</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>CineXplore</name>
-	<description>CineXplore</description>
+	<name>cinexplore-backend</name>
+	<description>cinexplore-backend</description>
 	<url/>
 	<licenses>
 		<license/>
