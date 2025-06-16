@@ -1,0 +1,137 @@
+[
+  {
+    "name": "User",
+    "fields": {
+      "user_id": "INT PRIMARY KEY AUTO_INCREMENT",
+      "username": "VARCHAR(50) UNIQUE NOT NULL",
+      "email": "VARCHAR(100) UNIQUE NOT NULL",
+      "password_hash": "VARCHAR(255) NOT NULL",
+      "created_at": "DATETIME DEFAULT CURRENT_TIMESTAMP"
+    },
+    "relations": {
+      "likes": "1:N → UserMovieLike",
+      "ratings": "1:N → UserMovieRating",
+      "comments": "1:N → UserMovieComment"
+    }
+  },
+  {
+    "name": "Movie",
+    "fields": {
+      "movie_id": "INT PRIMARY KEY AUTO_INCREMENT",
+      "title": "VARCHAR(200) NOT NULL",
+      "description": "TEXT",
+      "duration_min": "INT",
+      "release_date": "DATE",
+      "average_rating": "DECIMAL(3,2) DEFAULT 0.0",
+      "created_at": "DATETIME DEFAULT CURRENT_TIMESTAMP"
+    },
+    "relations": {
+      "genres": "N:M → MovieGenre",
+      "actors": "N:M → MovieActor",
+      "director": "1:1 → Director",
+      "likes": "N:M → UserMovieLike",
+      "ratings": "N:M → UserMovieRating",
+      "comments": "1:N → UserMovieComment"
+    }
+  },
+  {
+    "name": "Genre",
+    "fields": {
+      "genre_id": "INT PRIMARY KEY AUTO_INCREMENT",
+      "name": "VARCHAR(50) UNIQUE NOT NULL"
+    },
+    "relations": {
+      "movies": "N:M → MovieGenre"
+    }
+  },
+  {
+    "name": "Actor",
+    "fields": {
+      "actor_id": "INT PRIMARY KEY AUTO_INCREMENT",
+      "full_name": "VARCHAR(150) NOT NULL",
+      "birth_date": "DATE"
+    },
+    "relations": {
+      "movies": "N:M → MovieActor"
+    }
+  },
+  {
+    "name": "Director",
+    "fields": {
+      "director_id": "INT PRIMARY KEY AUTO_INCREMENT",
+      "full_name": "VARCHAR(150) NOT NULL",
+      "birth_date": "DATE"
+    },
+    "relations": {
+      "movies": "1:N → Movie"
+    }
+  },
+  {
+    "name": "MovieGenre",
+    "fields": {
+      "movie_id": "INT NOT NULL",
+      "genre_id": "INT NOT NULL"
+    },
+    "constraints": [
+      "PRIMARY KEY(movie_id, genre_id)",
+      "FOREIGN KEY(movie_id) REFERENCES Movie(movie_id)",
+      "FOREIGN KEY(genre_id) REFERENCES Genre(genre_id)"
+    ]
+  },
+  {
+    "name": "MovieActor",
+    "fields": {
+      "movie_id": "INT NOT NULL",
+      "actor_id": "INT NOT NULL"
+    },
+    "constraints": [
+      "PRIMARY KEY(movie_id, actor_id)",
+      "FOREIGN KEY(movie_id) REFERENCES Movie(movie_id)",
+      "FOREIGN KEY(actor_id) REFERENCES Actor(actor_id)"
+    ]
+  },
+  {
+    "name": "UserMovieLike",
+    "fields": {
+      "user_id": "INT NOT NULL",
+      "movie_id": "INT NOT NULL",
+      "liked_at": "DATETIME DEFAULT CURRENT_TIMESTAMP"
+    },
+    "constraints": [
+      "PRIMARY KEY(user_id, movie_id)",
+      "FOREIGN KEY(user_id) REFERENCES User(user_id)",
+      "FOREIGN KEY(movie_id) REFERENCES Movie(movie_id)"
+    ]
+  },
+  {
+    "name": "UserMovieRating",
+    "fields": {
+      "rating_id": "INT PRIMARY KEY AUTO_INCREMENT",
+      "user_id": "INT NOT NULL",
+      "movie_id": "INT NOT NULL",
+      "rating": "TINYINT NOT NULL CHECK(rating BETWEEN 1 AND 5)",
+      "rated_at": "DATETIME DEFAULT CURRENT_TIMESTAMP"
+    },
+    "constraints": [
+      "FOREIGN KEY(user_id) REFERENCES User(user_id)",
+      "FOREIGN KEY(movie_id) REFERENCES Movie(movie_id)"
+    ]
+  },
+  {
+    "name": "UserMovieComment",
+    "fields": {
+      "comment_id": "INT PRIMARY KEY AUTO_INCREMENT",
+      "user_id": "INT NOT NULL",
+      "movie_id": "INT NOT NULL",
+      "comment_text": "TEXT NOT NULL",
+      "created_at": "DATETIME DEFAULT CURRENT_TIMESTAMP",
+      "updated_at": "DATETIME NULL",
+      "sentiment_score": "DECIMAL(3,2) NULL",
+      "ai_topics": "TEXT NULL"
+    },
+    "constraints": [
+      "FOREIGN KEY(user_id) REFERENCES User(user_id)",
+      "FOREIGN KEY(movie_id) REFERENCES Movie(movie_id)"
+    ]
+  }
+]
