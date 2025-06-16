@@ -18,7 +18,7 @@ import java.util.Set;
 public class Director {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer directorId;
+    private Long directorId;
 
     @Column(length = 150, nullable = false)
     private String fullName;

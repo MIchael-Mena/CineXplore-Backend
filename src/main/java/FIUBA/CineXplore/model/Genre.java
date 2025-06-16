@@ -17,7 +17,7 @@ import java.util.Set;
 public class Genre {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer genreId;
+    private Long genreId;
 
     @Column(length = 50, unique = true, nullable = false)
     private String name;

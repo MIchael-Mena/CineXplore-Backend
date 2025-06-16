@@ -20,7 +20,7 @@ public class UserMovieLike {
     private Long userId;
 
     @Id
-    private Integer movieId;
+    private Long movieId;
 
     @ManyToOne
     @JoinColumn(name = "user_id", insertable = false, updatable = false)

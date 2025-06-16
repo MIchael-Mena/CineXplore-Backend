@@ -18,7 +18,7 @@ import java.util.Set;
 public class Actor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer actorId;
+    private Long actorId;
 
     @Column(length = 150, nullable = false)
     private String fullName;

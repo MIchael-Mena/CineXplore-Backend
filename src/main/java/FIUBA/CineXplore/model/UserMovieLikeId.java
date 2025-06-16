@@ -9,8 +9,8 @@ import java.util.Objects;
 @Getter
 @Setter
 public class UserMovieLikeId implements Serializable {
-    private Integer userId;
-    private Integer movieId;
+    private Long userId;
+    private Long movieId;
 
     @Override
     public boolean equals(Object o) {

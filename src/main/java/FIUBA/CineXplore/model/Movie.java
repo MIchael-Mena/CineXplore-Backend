@@ -20,7 +20,7 @@ import java.util.Set;
 public class Movie {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer movieId;
+    private Long movieId;
 
     @Column(length = 200, nullable = false)
     private String title;
