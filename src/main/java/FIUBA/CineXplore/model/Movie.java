@@ -33,14 +33,10 @@ public class Movie {
     private LocalDate releaseDate;
 
     @Column(precision = 3, scale = 2)
-    private BigDecimal averageRating = BigDecimal.ZERO;
+    private BigDecimal averageRating = BigDecimal.ZERO; // Default value set to zero
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
-
-    @ManyToOne
-    @JoinColumn(name = "director_id")
-    private Director director;
 
     @OneToMany(mappedBy = "movie")
     private Set<UserMovieLike> likes;
@@ -50,6 +46,14 @@ public class Movie {
 
     @OneToMany(mappedBy = "user")
     private Set<UserMovieComment> comments;
+
+    @ManyToMany
+    @JoinTable(
+            name = "MovieDirector",
+            joinColumns = @JoinColumn(name = "movie_id"),
+            inverseJoinColumns = @JoinColumn(name = "director_id")
+    )
+    private Set<Director> directors;
 
     @ManyToMany
     @JoinTable(

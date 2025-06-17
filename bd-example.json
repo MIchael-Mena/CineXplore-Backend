@@ -63,8 +63,20 @@
       "birth_date": "DATE"
     },
     "relations": {
-      "movies": "1:N → Movie"
+      "movies": "N:M → Movie"
     }
+  },
+  {
+    "name": "MovieDirector",
+    "fields": {
+      "movie_id": "INT NOT NULL",
+      "director_id": "INT NOT NULL"
+    },
+    "constraints": [
+      "PRIMARY KEY(movie_id, director_id)",
+      "FOREIGN KEY(movie_id) REFERENCES Movie(movie_id)",
+      "FOREIGN KEY(director_id) REFERENCES Director(director_id)"
+    ]
   },
   {
     "name": "MovieGenre",

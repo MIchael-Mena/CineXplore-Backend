@@ -25,7 +25,7 @@ public class Director {
 
     private LocalDate birthDate;
 
-    @OneToMany(mappedBy = "director")
+    @ManyToMany(mappedBy = "directors")
     private Set<Movie> movies;
 
 }
