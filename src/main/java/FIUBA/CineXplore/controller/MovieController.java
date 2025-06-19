@@ -11,6 +11,7 @@ import FIUBA.CineXplore.service.ActorService;
 import FIUBA.CineXplore.service.DirectorService;
 import FIUBA.CineXplore.service.GenreService;
 import FIUBA.CineXplore.service.MovieService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -54,23 +55,24 @@ public class MovieController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<MovieResponseDTO>> createMovie(@RequestBody MovieRequestDTO dto) {
-        Movie movie = new Movie();
-        if (!this.fillAndValidateMovie(movie, dto)) {
-            return ResponseEntity.status(400).body(new ApiResponse<>(400, "Datos inválidos", null));
+    public ResponseEntity<ApiResponse<MovieResponseDTO>> createMovie(@Valid @RequestBody MovieRequestDTO dto) {
+        Movie movie = mapDtoToMovie(new Movie(), dto);
+        if (movie == null) {
+            return ResponseEntity.status(400).body(new ApiResponse<>(400, "IDs de directores, géneros o actores inválidos", null));
         }
         Movie saved = movieService.save(movie);
         return ResponseEntity.status(201).body(new ApiResponse<>(201, "Película creada", this.toResponseDTO(saved)));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<MovieResponseDTO>> updateMovie(@PathVariable Long id, @RequestBody MovieRequestDTO dto) {
+    public ResponseEntity<ApiResponse<MovieResponseDTO>> updateMovie(@PathVariable Long id, @Valid @RequestBody MovieRequestDTO dto) {
         Movie movie = movieService.findById(id);
         if (movie == null) {
             return ResponseEntity.status(404).body(new ApiResponse<>(404, "Película no encontrada", null));
         }
-        if (!this.fillAndValidateMovie(movie, dto)) {
-            return ResponseEntity.status(400).body(new ApiResponse<>(400, "Datos inválidos", null));
+        movie = mapDtoToMovie(movie, dto);
+        if (movie == null) {
+            return ResponseEntity.status(400).body(new ApiResponse<>(400, "IDs de directores, géneros o actores inválidos", null));
         }
         Movie updated = movieService.save(movie);
         return ResponseEntity.ok(new ApiResponse<>(200, "Película actualizada", this.toResponseDTO(updated)));
@@ -88,20 +90,20 @@ public class MovieController {
 
     // --- Métodos auxiliares ---
 
-    private boolean fillAndValidateMovie(Movie movie, MovieRequestDTO dto) {
-        if (dto.title == null || dto.title.isBlank()) return false;
+    private Movie mapDtoToMovie(Movie movie, MovieRequestDTO dto) {
         movie.setTitle(dto.title);
+        movie.setCoverUrl(dto.coverUrl);
         movie.setDescription(dto.description);
         movie.setDurationMin(dto.durationMin);
         movie.setReleaseDate(dto.releaseDate);
 
-        // Director
+        // Directores
         if (dto.directorIds != null && !dto.directorIds.isEmpty()) {
             Set<Director> directors = dto.directorIds.stream()
                     .map(directorService::findById)
                     .filter(Objects::nonNull)
                     .collect(Collectors.toSet());
-            if (directors.size() != dto.directorIds.size()) return false;
+            if (directors.size() != dto.directorIds.size()) return null;
             movie.setDirectors(directors);
         } else {
             movie.setDirectors(Collections.emptySet());
@@ -113,7 +115,7 @@ public class MovieController {
                     .map(genreService::findById)
                     .filter(Objects::nonNull)
                     .collect(Collectors.toSet());
-            if (genres.size() != dto.genreIds.size()) return false;
+            if (genres.size() != dto.genreIds.size()) return null;
             movie.setGenres(genres);
         } else {
             movie.setGenres(Collections.emptySet());
@@ -125,12 +127,12 @@ public class MovieController {
                     .map(actorService::findById)
                     .filter(Objects::nonNull)
                     .collect(Collectors.toSet());
-            if (actors.size() != dto.actorIds.size()) return false;
+            if (actors.size() != dto.actorIds.size()) return null;
             movie.setActors(actors);
         } else {
             movie.setActors(Collections.emptySet());
         }
-        return true;
+        return movie;
     }
 
     private MovieResponseDTO toResponseDTO(Movie movie) {

@@ -25,11 +25,18 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
+    // Maneja errores de validación de argumentos, marcado por @Valid en los controladores
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponse<Void>> handleValidationException(MethodArgumentNotValidException ex) {
         List<FieldError> fieldErrors = ex.getBindingResult().getFieldErrors();
         List<String> errors = fieldErrors.stream()
-                .map(error -> error.getField() + ": " + error.getDefaultMessage())
+                .map(error -> {
+                    String msg = error.getDefaultMessage();
+                    if (msg == null || msg.trim().isEmpty()) {
+                        msg = "Campo inválido";
+                    }
+                    return error.getField() + ": " + msg;
+                })
                 .collect(Collectors.toList());
         ApiResponse<Void> response = new ApiResponse<>(
                 HttpStatus.BAD_REQUEST.value(),

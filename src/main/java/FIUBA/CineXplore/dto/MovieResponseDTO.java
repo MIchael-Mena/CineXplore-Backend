@@ -8,6 +8,7 @@ import java.util.Set;
 public class MovieResponseDTO {
     public Long movieId;
     public String title;
+    public String coverUrl;
     public String description;
     public Integer durationMin;
     public LocalDate releaseDate;
