@@ -21,9 +21,11 @@ import java.time.LocalDateTime;
 @Entity
 public class UserMovieLike {
     @Id
+    @Column(name = "user_id")
     private Long userId;
 
     @Id
+    @Column(name = "movie_id")
     private Long movieId;
 
     @ManyToOne

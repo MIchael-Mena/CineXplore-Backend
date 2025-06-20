@@ -59,7 +59,7 @@ public class Movie {
     @OneToMany(mappedBy = "movie")
     private Set<UserMovieRating> ratings = new HashSet<>();
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "movie")
     private Set<UserMovieComment> comments = new HashSet<>();
 
     // No usar CascadeType.REMOVE en las relaciones muchos a muchos, ya que esto eliminaría los registros de la tabla intermedia

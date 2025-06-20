@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
+    // Maneja excepciones de recursos no encontrados
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ApiResponse<Void>> handleInvalidFormatException(HttpMessageNotReadableException ex) {
         ApiResponse<Void> response = new ApiResponse<>(
@@ -44,6 +45,26 @@ public class GlobalExceptionHandler {
                 null
         );
         return ResponseEntity.badRequest().body(response);
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handleUserNotFound(UserNotFoundException ex) {
+        ApiResponse<Void> response = new ApiResponse<>(
+                HttpStatus.NOT_FOUND.value(),
+                ex.getMessage(),
+                null
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+    }
+
+    @ExceptionHandler(MovieNotFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handleMovieNotFound(MovieNotFoundException ex) {
+        ApiResponse<Void> response = new ApiResponse<>(
+                HttpStatus.NOT_FOUND.value(),
+                ex.getMessage(),
+                null
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 
 }

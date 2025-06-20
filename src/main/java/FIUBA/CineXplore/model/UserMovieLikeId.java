@@ -1,5 +1,6 @@
 package FIUBA.CineXplore.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,6 +9,7 @@ import java.util.Objects;
 
 @Getter
 @Setter
+@AllArgsConstructor
 public class UserMovieLikeId implements Serializable {
     private Long userId;
     private Long movieId;

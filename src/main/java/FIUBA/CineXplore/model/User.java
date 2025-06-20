@@ -21,8 +21,6 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
 
-    // Si no usa NotNull la base de datos seria la que se encargue de validar
-    // la unicidad del campo con nullable = false
     @NotBlank
     @Size(min = 3, max = 50)
     @Column(length = 50, unique = true, nullable = false)
@@ -50,11 +48,12 @@ public class User {
     @OneToMany(mappedBy = "user")
     private Set<UserMovieRating> ratings;
 
-    @OneToMany(mappedBy = "movie")
+    @OneToMany(mappedBy = "user")
     private Set<UserMovieComment> comments;
 
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(length = 20, nullable = false)
     private UserRole role = UserRole.USER;
+
 }

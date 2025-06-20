@@ -21,18 +21,14 @@ public class ActorController {
     @GetMapping
     public ResponseEntity<ApiResponse<List<Actor>>> getAllActors() {
         List<Actor> actors = actorService.findAll();
-        return ResponseEntity.ok(
-                new ApiResponse<>(200, "Lista de actores", actors)
-        );
+        return ResponseEntity.ok(new ApiResponse<>(200, "Lista de actores", actors));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<Actor>> getActorById(@PathVariable Long id) {
         Actor actor = actorService.findById(id);
         if (actor != null) {
-            return ResponseEntity.ok(
-                    new ApiResponse<>(200, "Actor encontrado", actor)
-            );
+            return ResponseEntity.ok(new ApiResponse<>(200, "Actor encontrado", actor));
         } else {
             return ResponseEntity.status(404).body(
                     new ApiResponse<>(404, "Actor no encontrado", null)
