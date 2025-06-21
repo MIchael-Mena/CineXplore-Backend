@@ -2,6 +2,7 @@ package FIUBA.CineXplore.controller;
 
 import FIUBA.CineXplore.dto.ApiResponse;
 import FIUBA.CineXplore.model.UserMovieRating;
+import FIUBA.CineXplore.service.MovieService;
 import FIUBA.CineXplore.service.UserMovieRatingService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,9 +14,11 @@ import java.util.List;
 public class UserMovieRatingController {
 
     private final UserMovieRatingService userMovieRatingService;
+    private final MovieService movieService;
 
-    public UserMovieRatingController(UserMovieRatingService userMovieRatingService) {
+    public UserMovieRatingController(UserMovieRatingService userMovieRatingService, MovieService movieService) {
         this.userMovieRatingService = userMovieRatingService;
+        this.movieService = movieService;
     }
 
     @PostMapping
@@ -24,6 +27,7 @@ public class UserMovieRatingController {
             @RequestParam Long movieId,
             @RequestParam Byte rating) {
         UserMovieRating userMovieRating = userMovieRatingService.rateMovie(userId, movieId, rating);
+        movieService.updateAverageRating(movieId);
         return ResponseEntity.ok(new ApiResponse<>(200, "Rating registrado", userMovieRating));
     }
 

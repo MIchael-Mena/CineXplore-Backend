@@ -2,7 +2,9 @@
 package FIUBA.CineXplore.controller;
 
 import FIUBA.CineXplore.dto.ApiResponse;
+import FIUBA.CineXplore.model.Movie;
 import FIUBA.CineXplore.model.User;
+import FIUBA.CineXplore.service.RecommendationService;
 import FIUBA.CineXplore.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -15,9 +17,11 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+    private final RecommendationService recommendationService;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, RecommendationService recommendationService) {
         this.userService = userService;
+        this.recommendationService = recommendationService;
     }
 
     @PostMapping
@@ -51,5 +55,11 @@ public class UserController {
     public ResponseEntity<ApiResponse<Void>> deleteUser(@PathVariable Long id) {
         userService.deleteById(id);
         return ResponseEntity.ok(new ApiResponse<>(200, "Usuario eliminado exitosamente", null));
+    }
+
+    @GetMapping("/{id}/recommendations")
+    public ResponseEntity<ApiResponse<List<Movie>>> getRecommendations(@PathVariable Long id) {
+        List<Movie> recommendations = recommendationService.recommendMoviesForUser(id);
+        return ResponseEntity.ok(new ApiResponse<>(200, "Películas recomendadas", recommendations));
     }
 }
