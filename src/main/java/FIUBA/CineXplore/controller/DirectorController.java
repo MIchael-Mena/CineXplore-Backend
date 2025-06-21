@@ -29,15 +29,9 @@ public class DirectorController {
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<Director>> getDirectorById(@PathVariable Long id) {
         Director director = directorService.findById(id);
-        if (director != null) {
-            return ResponseEntity.ok(
-                    new ApiResponse<>(200, "Director encontrado", director)
-            );
-        } else {
-            return ResponseEntity.status(404).body(
-                    new ApiResponse<>(404, "Director no encontrado", null)
-            );
-        }
+        return ResponseEntity.ok(
+                new ApiResponse<>(200, "Director encontrado", director)
+        );
     }
 
     @PostMapping
@@ -51,11 +45,6 @@ public class DirectorController {
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<Director>> updateDirector(@PathVariable Long id, @RequestBody Director directorDetails) {
         Director director = directorService.findById(id);
-        if (director == null) {
-            return ResponseEntity.status(404).body(
-                    new ApiResponse<>(404, "Director no encontrado", null)
-            );
-        }
         director.setFullName(directorDetails.getFullName());
         director.setBirthDate(directorDetails.getBirthDate());
         Director updated = directorService.save(director);
@@ -66,12 +55,6 @@ public class DirectorController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteDirector(@PathVariable Long id) {
-        Director director = directorService.findById(id);
-        if (director == null) {
-            return ResponseEntity.status(404).body(
-                    new ApiResponse<>(404, "Director no encontrado", null)
-            );
-        }
         directorService.deleteById(id);
         return ResponseEntity.ok(
                 new ApiResponse<>(200, "Director eliminado", null)

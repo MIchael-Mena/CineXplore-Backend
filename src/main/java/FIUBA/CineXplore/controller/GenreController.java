@@ -28,16 +28,10 @@ public class GenreController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<Genre>> getGenreById(@PathVariable Long id) {
-        Genre genre = genreService.findById(id);
-        if (genre != null) {
-            return ResponseEntity.ok(
-                    new ApiResponse<>(200, "Género encontrado", genre)
-            );
-        } else {
-            return ResponseEntity.status(404).body(
-                    new ApiResponse<>(404, "Género no encontrado", null)
-            );
-        }
+        Genre genre = genreService.findById(id); // Lanza excepción si no existe
+        return ResponseEntity.ok(
+                new ApiResponse<>(200, "Género encontrado", genre)
+        );
     }
 
     @PostMapping
@@ -50,12 +44,7 @@ public class GenreController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<Genre>> updateGenre(@PathVariable Long id, @RequestBody Genre genreDetails) {
-        Genre genre = genreService.findById(id);
-        if (genre == null) {
-            return ResponseEntity.status(404).body(
-                    new ApiResponse<>(404, "Género no encontrado", null)
-            );
-        }
+        Genre genre = genreService.findById(id); // Lanza excepción si no existe
         genre.setName(genreDetails.getName());
         Genre updated = genreService.save(genre);
         return ResponseEntity.ok(
@@ -65,13 +54,7 @@ public class GenreController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteGenre(@PathVariable Long id) {
-        Genre genre = genreService.findById(id);
-        if (genre == null) {
-            return ResponseEntity.status(404).body(
-                    new ApiResponse<>(404, "Género no encontrado", null)
-            );
-        }
-        genreService.deleteById(id);
+        genreService.deleteById(id); // Lanza excepción si no existe
         return ResponseEntity.ok(
                 new ApiResponse<>(200, "Género eliminado", null)
         );

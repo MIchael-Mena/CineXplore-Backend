@@ -1,8 +1,6 @@
 package FIUBA.CineXplore.service;
 
-import FIUBA.CineXplore.exception.CommentNotFoundException;
-import FIUBA.CineXplore.exception.MovieNotFoundException;
-import FIUBA.CineXplore.exception.UserNotFoundException;
+import FIUBA.CineXplore.exception.EntityNotFoundException;
 import FIUBA.CineXplore.model.Movie;
 import FIUBA.CineXplore.model.User;
 import FIUBA.CineXplore.model.UserMovieComment;
@@ -32,9 +30,9 @@ public class UserMovieCommentService implements IUserMovieCommentService {
     @Override
     public UserMovieComment addComment(Long userId, Long movieId, String commentText) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException(userId));
+                .orElseThrow(() -> new EntityNotFoundException("User", userId));
         Movie movie = movieRepository.findById(movieId)
-                .orElseThrow(() -> new MovieNotFoundException(movieId));
+                .orElseThrow(() -> new EntityNotFoundException("Movie", movieId));
         UserMovieComment comment = new UserMovieComment();
         comment.setUser(user);
         comment.setMovie(movie);
@@ -52,7 +50,7 @@ public class UserMovieCommentService implements IUserMovieCommentService {
     @Override
     public List<UserMovieComment> getCommentsByUser(Long userId) {
         if (!userRepository.existsById(userId)) {
-            throw new UserNotFoundException(userId);
+            throw new EntityNotFoundException("User", userId);
         }
         return userMovieCommentRepository.findAll()
                 .stream()
@@ -63,7 +61,7 @@ public class UserMovieCommentService implements IUserMovieCommentService {
     @Override
     public List<UserMovieComment> getCommentsByMovie(Long movieId) {
         if (!movieRepository.existsById(movieId)) {
-            throw new MovieNotFoundException(movieId);
+            throw new EntityNotFoundException("Movie", movieId);
         }
         return userMovieCommentRepository.findAll()
                 .stream()
@@ -74,7 +72,7 @@ public class UserMovieCommentService implements IUserMovieCommentService {
     @Override
     public UserMovieComment updateComment(Long commentId, String commentText) {
         UserMovieComment comment = userMovieCommentRepository.findById(commentId)
-                .orElseThrow(() -> new CommentNotFoundException(commentId));
+                .orElseThrow(() -> new EntityNotFoundException("Comment", commentId));
         comment.setCommentText(commentText);
         comment.setCreatedAt(LocalDateTime.now());
         return userMovieCommentRepository.save(comment);

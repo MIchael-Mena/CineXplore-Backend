@@ -1,5 +1,6 @@
 package FIUBA.CineXplore.service;
 
+import FIUBA.CineXplore.exception.EntityNotFoundException;
 import FIUBA.CineXplore.model.Director;
 import FIUBA.CineXplore.repository.DirectorRepository;
 import org.springframework.stereotype.Service;
@@ -22,11 +23,15 @@ public class DirectorService implements IGenericService<Director> {
 
     @Override
     public Director findById(Long id) {
-        return directorRepository.findById(id).orElse(null);
+        return directorRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Director", id));
     }
 
     @Override
     public void deleteById(Long id) {
+        if (!directorRepository.existsById(id)) {
+            throw new EntityNotFoundException("Director", id);
+        }
         directorRepository.deleteById(id);
     }
 

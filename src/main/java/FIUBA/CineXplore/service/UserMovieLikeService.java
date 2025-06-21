@@ -1,7 +1,6 @@
 package FIUBA.CineXplore.service;
 
-import FIUBA.CineXplore.exception.MovieNotFoundException;
-import FIUBA.CineXplore.exception.UserNotFoundException;
+import FIUBA.CineXplore.exception.EntityNotFoundException;
 import FIUBA.CineXplore.model.Movie;
 import FIUBA.CineXplore.model.User;
 import FIUBA.CineXplore.model.UserMovieLike;
@@ -35,9 +34,9 @@ public class UserMovieLikeService implements IUserMovieLikeService {
             return userMovieLikeRepository.findById(id).get();
         }
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException(userId));
+                .orElseThrow(() -> new EntityNotFoundException("User", userId));
         Movie movie = movieRepository.findById(movieId)
-                .orElseThrow(() -> new MovieNotFoundException(movieId));
+                .orElseThrow(() -> new EntityNotFoundException("Movie", movieId));
         UserMovieLike like = new UserMovieLike();
         like.setUserId(userId);
         like.setMovieId(movieId);
@@ -55,7 +54,7 @@ public class UserMovieLikeService implements IUserMovieLikeService {
     @Override
     public List<UserMovieLike> getLikesByUser(Long userId) {
         if (!userRepository.existsById(userId)) {
-            throw new UserNotFoundException(userId);
+            throw new EntityNotFoundException("User", userId);
         }
         return userMovieLikeRepository.findAll()
                 .stream()
@@ -66,7 +65,7 @@ public class UserMovieLikeService implements IUserMovieLikeService {
     @Override
     public List<UserMovieLike> getLikesByMovie(Long movieId) {
         if (!movieRepository.existsById(movieId)) {
-            throw new MovieNotFoundException(movieId);
+            throw new EntityNotFoundException("Movie", movieId);
         }
         return userMovieLikeRepository.findAll()
                 .stream()

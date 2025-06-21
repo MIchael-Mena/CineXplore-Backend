@@ -1,5 +1,6 @@
 package FIUBA.CineXplore.service;
 
+import FIUBA.CineXplore.exception.EntityNotFoundException;
 import FIUBA.CineXplore.model.Actor;
 import FIUBA.CineXplore.repository.ActorRepository;
 import org.springframework.stereotype.Service;
@@ -8,11 +9,6 @@ import java.util.List;
 
 @Service
 public class ActorService implements IGenericService<Actor> {
-
-/*  Inyección de dependencias por campo, facil pero no recomendado
-    @Autowired
-    private ActorRepository actorRepository;
-*/
 
     private final ActorRepository actorRepository;
 
@@ -27,11 +23,15 @@ public class ActorService implements IGenericService<Actor> {
 
     @Override
     public Actor findById(Long id) {
-        return actorRepository.findById(id).orElse(null);
+        return actorRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Actor", id));
     }
 
     @Override
     public void deleteById(Long id) {
+        if (!actorRepository.existsById(id)) {
+            throw new EntityNotFoundException("Actor", id);
+        }
         actorRepository.deleteById(id);
     }
 
@@ -39,5 +39,4 @@ public class ActorService implements IGenericService<Actor> {
     public List<Actor> findAll() {
         return actorRepository.findAll();
     }
-
 }

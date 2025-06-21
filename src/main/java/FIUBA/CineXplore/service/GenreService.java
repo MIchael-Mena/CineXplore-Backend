@@ -1,5 +1,6 @@
 package FIUBA.CineXplore.service;
 
+import FIUBA.CineXplore.exception.EntityNotFoundException;
 import FIUBA.CineXplore.model.Genre;
 import FIUBA.CineXplore.repository.GenreRepository;
 import org.springframework.stereotype.Service;
@@ -22,11 +23,15 @@ public class GenreService implements IGenericService<Genre> {
 
     @Override
     public Genre findById(Long id) {
-        return genreRepository.findById(id).orElse(null);
+        return genreRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Género", id));
     }
 
     @Override
     public void deleteById(Long id) {
+        if (!genreRepository.existsById(id)) {
+            throw new EntityNotFoundException("Género", id);
+        }
         genreRepository.deleteById(id);
     }
 

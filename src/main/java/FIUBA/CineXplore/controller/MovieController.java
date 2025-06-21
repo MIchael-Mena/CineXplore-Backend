@@ -47,10 +47,7 @@ public class MovieController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<MovieResponseDTO>> getMovieById(@PathVariable Long id) {
-        Movie movie = movieService.findById(id);
-        if (movie == null) {
-            return ResponseEntity.status(404).body(new ApiResponse<>(404, "Película no encontrada", null));
-        }
+        Movie movie = movieService.findById(id); // Lanza excepción si no existe
         return ResponseEntity.ok(new ApiResponse<>(200, "Película encontrada", this.toResponseDTO(movie)));
     }
 
@@ -66,10 +63,7 @@ public class MovieController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<MovieResponseDTO>> updateMovie(@PathVariable Long id, @Valid @RequestBody MovieRequestDTO dto) {
-        Movie movie = movieService.findById(id);
-        if (movie == null) {
-            return ResponseEntity.status(404).body(new ApiResponse<>(404, "Película no encontrada", null));
-        }
+        Movie movie = movieService.findById(id); // Lanza excepción si no existe
         movie = mapDtoToMovie(movie, dto);
         if (movie == null) {
             return ResponseEntity.status(400).body(new ApiResponse<>(400, "IDs de directores, géneros o actores inválidos", null));
@@ -80,11 +74,7 @@ public class MovieController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteMovie(@PathVariable Long id) {
-        Movie movie = movieService.findById(id);
-        if (movie == null) {
-            return ResponseEntity.status(404).body(new ApiResponse<>(404, "Película no encontrada", null));
-        }
-        movieService.deleteById(id);
+        movieService.deleteById(id); // Lanza excepción si no existe
         return ResponseEntity.ok(new ApiResponse<>(200, "Película eliminada", null));
     }
 

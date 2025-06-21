@@ -27,13 +27,7 @@ public class ActorController {
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<Actor>> getActorById(@PathVariable Long id) {
         Actor actor = actorService.findById(id);
-        if (actor != null) {
-            return ResponseEntity.ok(new ApiResponse<>(200, "Actor encontrado", actor));
-        } else {
-            return ResponseEntity.status(404).body(
-                    new ApiResponse<>(404, "Actor no encontrado", null)
-            );
-        }
+        return ResponseEntity.ok(new ApiResponse<>(200, "Actor encontrado", actor));
     }
 
     @PostMapping
@@ -47,11 +41,6 @@ public class ActorController {
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<Actor>> updateActor(@PathVariable Long id, @RequestBody Actor actorDetails) {
         Actor actor = actorService.findById(id);
-        if (actor == null) {
-            return ResponseEntity.status(404).body(
-                    new ApiResponse<>(404, "Actor no encontrado", null)
-            );
-        }
         actor.setFullName(actorDetails.getFullName());
         actor.setBirthDate(actorDetails.getBirthDate());
         Actor updated = actorService.save(actor);
@@ -62,13 +51,7 @@ public class ActorController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteActor(@PathVariable Long id) {
-        Actor actor = actorService.findById(id);
-        if (actor == null) {
-            return ResponseEntity.status(404).body(
-                    new ApiResponse<>(404, "Actor no encontrado", null)
-            );
-        }
-        actorService.deleteById(id);
+        actorService.deleteById(id); // Lanza excepción si no existe
         return ResponseEntity.ok(
                 new ApiResponse<>(200, "Actor eliminado", null)
         );

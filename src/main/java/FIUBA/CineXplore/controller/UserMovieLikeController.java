@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-// Todo: Revisar si se podria usar DTOs para las respuestas
 @RestController
 @RequestMapping("/api/user-movie-likes")
 public class UserMovieLikeController {

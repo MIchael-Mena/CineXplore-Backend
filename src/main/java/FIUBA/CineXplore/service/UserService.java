@@ -1,5 +1,6 @@
 package FIUBA.CineXplore.service;
 
+import FIUBA.CineXplore.exception.EntityNotFoundException;
 import FIUBA.CineXplore.model.User;
 import FIUBA.CineXplore.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -22,11 +23,15 @@ public class UserService implements IGenericService<User> {
 
     @Override
     public User findById(Long id) {
-        return userRepository.findById(id).orElse(null);
+        return userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Usuario", id));
     }
 
     @Override
     public void deleteById(Long id) {
+        if (!userRepository.existsById(id)) {
+            throw new EntityNotFoundException("Usuario", id);
+        }
         userRepository.deleteById(id);
     }
 

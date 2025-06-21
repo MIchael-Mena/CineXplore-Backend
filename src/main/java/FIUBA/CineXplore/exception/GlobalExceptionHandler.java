@@ -47,18 +47,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(response);
     }
 
-    @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<ApiResponse<Void>> handleUserNotFound(UserNotFoundException ex) {
-        ApiResponse<Void> response = new ApiResponse<>(
-                HttpStatus.NOT_FOUND.value(),
-                ex.getMessage(),
-                null
-        );
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-    }
-
-    @ExceptionHandler(MovieNotFoundException.class)
-    public ResponseEntity<ApiResponse<Void>> handleMovieNotFound(MovieNotFoundException ex) {
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handleEntityNotFound(EntityNotFoundException ex) {
         ApiResponse<Void> response = new ApiResponse<>(
                 HttpStatus.NOT_FOUND.value(),
                 ex.getMessage(),

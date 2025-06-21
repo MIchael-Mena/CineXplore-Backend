@@ -1,3 +1,4 @@
+// src/main/java/FIUBA/CineXplore/controller/UserController.java
 package FIUBA.CineXplore.controller;
 
 import FIUBA.CineXplore.dto.ApiResponse;
@@ -28,9 +29,6 @@ public class UserController {
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<User>> getUserById(@PathVariable Long id) {
         User user = userService.findById(id);
-        if (user == null) {
-            return ResponseEntity.status(404).body(new ApiResponse<>(404, "Usuario no encontrado", null));
-        }
         return ResponseEntity.ok(new ApiResponse<>(200, "Usuario encontrado", user));
     }
 
@@ -43,10 +41,6 @@ public class UserController {
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<User>> updateUser(@PathVariable Long id, @Valid @RequestBody User userDetails) {
         User user = userService.findById(id);
-        if (user == null) {
-            return ResponseEntity.status(404).body(new ApiResponse<>(404, "Usuario no encontrado", null));
-        }
-        // Solo se permite actualizar username y email
         user.setUsername(userDetails.getUsername());
         user.setEmail(userDetails.getEmail());
         User updated = userService.save(user);
