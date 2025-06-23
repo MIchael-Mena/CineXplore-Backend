@@ -4,6 +4,7 @@ import FIUBA.CineXplore.dto.ApiResponse;
 import FIUBA.CineXplore.model.Director;
 import FIUBA.CineXplore.service.DirectorService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -34,6 +35,7 @@ public class DirectorController {
         );
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<ApiResponse<Director>> createDirector(@RequestBody Director director) {
         Director saved = directorService.save(director);
@@ -42,6 +44,7 @@ public class DirectorController {
         );
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<Director>> updateDirector(@PathVariable Long id, @RequestBody Director directorDetails) {
         Director director = directorService.findById(id);
@@ -53,6 +56,7 @@ public class DirectorController {
         );
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteDirector(@PathVariable Long id) {
         directorService.deleteById(id);

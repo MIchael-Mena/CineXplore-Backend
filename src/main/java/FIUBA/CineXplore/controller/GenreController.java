@@ -4,6 +4,7 @@ import FIUBA.CineXplore.dto.ApiResponse;
 import FIUBA.CineXplore.model.Genre;
 import FIUBA.CineXplore.service.GenreService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -34,6 +35,7 @@ public class GenreController {
         );
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<ApiResponse<Genre>> createGenre(@RequestBody Genre genre) {
         Genre saved = genreService.save(genre);
@@ -42,6 +44,7 @@ public class GenreController {
         );
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<Genre>> updateGenre(@PathVariable Long id, @RequestBody Genre genreDetails) {
         Genre genre = genreService.findById(id); // Lanza excepción si no existe
@@ -52,6 +55,7 @@ public class GenreController {
         );
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteGenre(@PathVariable Long id) {
         genreService.deleteById(id); // Lanza excepción si no existe

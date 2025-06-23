@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@PreAuthorize("hasRole('ADMIN')")
 @RestController
 @RequestMapping("/api/actors")
 public class ActorController {
@@ -40,6 +41,7 @@ public class ActorController {
         );
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<Actor>> updateActor(@PathVariable Long id, @RequestBody Actor actorDetails) {
         Actor actor = actorService.findById(id);
@@ -51,6 +53,7 @@ public class ActorController {
         );
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteActor(@PathVariable Long id) {
         actorService.deleteById(id); // Lanza excepción si no existe

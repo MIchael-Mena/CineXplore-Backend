@@ -31,7 +31,8 @@ public class MainUser implements UserDetails {
 
     @Override
     public String getUsername() {
-        return user.getUserName();
+        return user.getEmail();
+//        return user.getUserName();
     }
 
     @Override

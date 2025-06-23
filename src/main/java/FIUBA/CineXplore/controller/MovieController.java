@@ -13,6 +13,7 @@ import FIUBA.CineXplore.service.GenreService;
 import FIUBA.CineXplore.service.MovieService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
@@ -44,13 +45,14 @@ public class MovieController {
         List<MovieResponseDTO> dtos = movies.stream().map(this::toResponseDTO).collect(Collectors.toList());
         return ResponseEntity.ok(new ApiResponse<>(200, "Lista de películas", dtos));
     }
-
+    
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<MovieResponseDTO>> getMovieById(@PathVariable Long id) {
         Movie movie = movieService.findById(id); // Lanza excepción si no existe
         return ResponseEntity.ok(new ApiResponse<>(200, "Película encontrada", this.toResponseDTO(movie)));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<ApiResponse<MovieResponseDTO>> createMovie(@Valid @RequestBody MovieRequestDTO dto) {
         Movie movie = mapDtoToMovie(new Movie(), dto);
@@ -61,6 +63,7 @@ public class MovieController {
         return ResponseEntity.status(201).body(new ApiResponse<>(201, "Película creada", this.toResponseDTO(saved)));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<MovieResponseDTO>> updateMovie(@PathVariable Long id, @Valid @RequestBody MovieRequestDTO dto) {
         Movie movie = movieService.findById(id); // Lanza excepción si no existe
@@ -72,6 +75,7 @@ public class MovieController {
         return ResponseEntity.ok(new ApiResponse<>(200, "Película actualizada", this.toResponseDTO(updated)));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteMovie(@PathVariable Long id) {
         movieService.deleteById(id); // Lanza excepción si no existe

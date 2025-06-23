@@ -2,7 +2,7 @@ package FIUBA.CineXplore.security.service;
 
 import FIUBA.CineXplore.model.User;
 import FIUBA.CineXplore.repository.UserRepository;
-import FIUBA.CineXplore.security.jwt.JwtService;
+import FIUBA.CineXplore.security.jwt.JwtProvider;
 import FIUBA.CineXplore.security.model.MainUser;
 import FIUBA.CineXplore.security.model.Role;
 import FIUBA.CineXplore.security.model.RoleName;
@@ -26,7 +26,7 @@ public class AuthService implements UserDetailsService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService;
+    private final JwtProvider jwtProvider;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -46,7 +46,7 @@ public class AuthService implements UserDetailsService {
     }
 
     public String createToken(User user) {
-        return jwtService.createToken(user);
+        return jwtProvider.createToken(user);
     }
 
     public User createUser(String username, String email, String password) {
@@ -57,10 +57,9 @@ public class AuthService implements UserDetailsService {
             throw new IllegalArgumentException("El nombre de usuario ya está registrado");
         }
 
-/*        Role userRole = roleRepository.findByRoleName(RoleName.ADMIN)
-                .orElseThrow(() -> new IllegalStateException("Rol USER no encontrado"));*/
-        Role userRole = roleRepository.findByRoleName(RoleName.USER)
-                .orElseThrow(() -> new IllegalStateException("Rol USER no encontrado"));
+        RoleName roleName = email.endsWith("@fi.uba.ar") ? RoleName.ADMIN : RoleName.USER;
+        Role userRole = roleRepository.findByRoleName(roleName)
+                .orElseThrow(() -> new IllegalStateException("Rol " + roleName + " no encontrado"));
 
         User user = new User();
         user.setUserName(username);

@@ -4,7 +4,6 @@ import FIUBA.CineXplore.security.jwt.JwtAuthFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -22,7 +21,6 @@ import java.util.List;
 @Configuration
 //@EnableWebSecurity(debug = true)
 @EnableMethodSecurity(securedEnabled = true)
-//@EnableMethodSecurity(prePostEnabled = true)
 @RequiredArgsConstructor
 public class MainSecurity {
 
@@ -36,15 +34,15 @@ public class MainSecurity {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/error").permitAll()
-                        .requestMatchers("/users").permitAll()
-                        .requestMatchers("/session").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/entrenadores").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/nutricionistas").permitAll()
-                        .requestMatchers("/atletas/**").permitAll()
-                        .anyRequest().permitAll()
+                                .requestMatchers("/auth").permitAll()
+                                .requestMatchers("/api/comments/**").authenticated()
+                                .requestMatchers("/api/user-movie-likes/**").authenticated()
+                                .requestMatchers("/api/user-movie-ratings/**").authenticated()
+//                        .requestMatchers(HttpMethod.GET, "/api").permitAll()
+                                .anyRequest().permitAll()
                 )
                 .sessionManagement(sessionManager -> sessionManager
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))

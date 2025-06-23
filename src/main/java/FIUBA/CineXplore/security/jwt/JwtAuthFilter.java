@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
 
-    private final JwtService jwtService;
+    private final JwtProvider jwtProvider;
 
     @Override
     protected void doFilterInternal(
@@ -45,9 +45,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
         String token = authHeader.substring(headerPrefix.length());
 
-        jwtService.extractVerifiedUserData(token).ifPresent(userTokenData -> {
+        jwtProvider.extractVerifiedUserData(token).ifPresent(userTokenData -> {
             List<SimpleGrantedAuthority> authorities = userTokenData.roles().stream()
-                    .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
+                    .map(role -> new SimpleGrantedAuthority("ROLE_" + role)) // Prepend "ROLE_" to each role for Spring Security
                     .collect(Collectors.toList());
 
             var authToken = new UsernamePasswordAuthenticationToken(
@@ -58,18 +58,5 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(authToken);
         });
-/*        jwtService.extractVerifiedUserData(token).ifPresent(userTokenData -> {
-            List<SimpleGrantedAuthority> authorities = userTokenData.roles().stream()
-                    .map(SimpleGrantedAuthority::new)
-                    .collect(Collectors.toList());
-
-            var authToken = new UsernamePasswordAuthenticationToken(
-                    userTokenData.email(),
-                    null,
-                    authorities
-            );
-            authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-            SecurityContextHolder.getContext().setAuthentication(authToken);
-        });*/
     }
 }
