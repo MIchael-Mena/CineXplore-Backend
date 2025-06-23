@@ -1,13 +1,19 @@
 package FIUBA.CineXplore.model;
 
+import FIUBA.CineXplore.security.model.BaseUser;
+import FIUBA.CineXplore.security.model.Role;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 @Table(name = "User")
@@ -16,7 +22,7 @@ import java.util.Set;
 @Getter
 @Setter
 @Entity
-public class User {
+public class User implements BaseUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
@@ -24,7 +30,7 @@ public class User {
     @NotBlank
     @Size(min = 3, max = 50)
     @Column(length = 50, unique = true, nullable = false)
-    private String username;
+    private String userName;
 
     @NotBlank
     @Email
@@ -32,10 +38,10 @@ public class User {
     @Column(length = 100, unique = true, nullable = false)
     private String email;
 
-    @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$", message = "La contraseña debe tener al menos 8 caracteres, incluyendo letras y números")
+    // @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$", message = "La contraseña debe tener al menos 8 caracteres, incluyendo letras y números")
     @NotBlank
-    @Size(min = 8, max = 255)
-    @Column(length = 255, nullable = false)
+    @Size(max = 255)
+    @Column(nullable = false)
     private String passwordHash;
 
     @NotNull
@@ -52,8 +58,15 @@ public class User {
     private Set<UserMovieComment> comments;
 
     @NotNull
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "user_role",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Set<Role> roles = new HashSet<>();
+
+/*    @NotNull
     @Enumerated(EnumType.STRING)
     @Column(length = 20, nullable = false)
-    private UserRole role = UserRole.USER;
+    private RoleName role = RoleName.USER;*/
 
 }

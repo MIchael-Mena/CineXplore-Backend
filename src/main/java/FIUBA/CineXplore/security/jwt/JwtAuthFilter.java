@@ -1,4 +1,4 @@
-package FIUBA.CineXplore.security;
+package FIUBA.CineXplore.security.jwt;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -15,6 +15,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -33,12 +34,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     }
 
     private void authenticateToken(@NonNull HttpServletRequest request) {
-        // Is the user already authenticated?
         if (SecurityContextHolder.getContext().getAuthentication() != null) {
             return;
         }
 
-        // Try to get the token
         String authHeader = request.getHeader("Authorization");
         String headerPrefix = "Bearer ";
         if (authHeader == null || !authHeader.startsWith(headerPrefix)) {
@@ -46,15 +45,31 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
         String token = authHeader.substring(headerPrefix.length());
 
-        jwtService.extractVerifiedUserDetails(token).ifPresent(userDetails -> {
+        jwtService.extractVerifiedUserData(token).ifPresent(userTokenData -> {
+            List<SimpleGrantedAuthority> authorities = userTokenData.roles().stream()
+                    .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
+                    .collect(Collectors.toList());
+
             var authToken = new UsernamePasswordAuthenticationToken(
-                    userDetails,
+                    userTokenData.email(),
                     null,
-                    List.of(new SimpleGrantedAuthority(userDetails.role()))
-                    
+                    authorities
             );
             authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(authToken);
         });
+/*        jwtService.extractVerifiedUserData(token).ifPresent(userTokenData -> {
+            List<SimpleGrantedAuthority> authorities = userTokenData.roles().stream()
+                    .map(SimpleGrantedAuthority::new)
+                    .collect(Collectors.toList());
+
+            var authToken = new UsernamePasswordAuthenticationToken(
+                    userTokenData.email(),
+                    null,
+                    authorities
+            );
+            authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+            SecurityContextHolder.getContext().setAuthentication(authToken);
+        });*/
     }
 }

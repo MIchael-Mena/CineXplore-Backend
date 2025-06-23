@@ -1,4 +1,4 @@
-package FIUBA.CineXplore.security;
+package FIUBA.CineXplore.security.dto;
 
 import lombok.NonNull;
 

@@ -1,4 +1,3 @@
-// src/main/java/FIUBA/CineXplore/controller/UserController.java
 package FIUBA.CineXplore.controller;
 
 import FIUBA.CineXplore.dto.ApiResponse;
@@ -24,11 +23,11 @@ public class UserController {
         this.recommendationService = recommendationService;
     }
 
-    @PostMapping
+/*    @PostMapping
     public ResponseEntity<ApiResponse<User>> createUser(@Valid @RequestBody User user) {
         User created = userService.save(user);
         return ResponseEntity.ok(new ApiResponse<>(200, "Usuario creado exitosamente", created));
-    }
+    }*/
 
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<User>> getUserById(@PathVariable Long id) {
@@ -42,10 +41,11 @@ public class UserController {
         return ResponseEntity.ok(new ApiResponse<>(200, "Lista de usuarios", users));
     }
 
+    //    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<User>> updateUser(@PathVariable Long id, @Valid @RequestBody User userDetails) {
         User user = userService.findById(id);
-        user.setUsername(userDetails.getUsername());
+        user.setUserName(userDetails.getUserName());
         user.setEmail(userDetails.getEmail());
         User updated = userService.save(user);
         return ResponseEntity.ok(new ApiResponse<>(200, "Usuario actualizado exitosamente", updated));

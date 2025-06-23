@@ -4,6 +4,7 @@ import FIUBA.CineXplore.dto.ApiResponse;
 import FIUBA.CineXplore.model.Actor;
 import FIUBA.CineXplore.service.ActorService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,6 +31,7 @@ public class ActorController {
         return ResponseEntity.ok(new ApiResponse<>(200, "Actor encontrado", actor));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<ApiResponse<Actor>> createActor(@RequestBody Actor actor) {
         Actor saved = actorService.save(actor);

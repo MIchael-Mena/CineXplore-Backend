@@ -1,33 +1,15 @@
 package FIUBA.CineXplore.dto;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
 import java.time.LocalDateTime;
 
+@Getter
+@RequiredArgsConstructor
 public class ApiResponse<T> {
-    private LocalDateTime timestamp;
-    private int status;
-    private String message;
-    private T data;
-
-    public ApiResponse(int status, String message, T data) {
-        this.timestamp = LocalDateTime.now();
-        this.status = status;
-        this.message = message;
-        this.data = data;
-    }
-
-    public LocalDateTime getTimestamp() {
-        return timestamp;
-    }
-
-    public int getStatus() {
-        return status;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public T getData() {
-        return data;
-    }
+    private final LocalDateTime timestamp = LocalDateTime.now();
+    private final int status;
+    private final String message;
+    private final T data;
 }
