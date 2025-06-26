@@ -6,6 +6,7 @@ import FIUBA.CineXplore.model.User;
 import FIUBA.CineXplore.service.RecommendationService;
 import FIUBA.CineXplore.service.UserService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -15,16 +16,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
-
+@RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
     private final RecommendationService recommendationService;
-
-    public UserController(UserService userService, RecommendationService recommendationService) {
-        this.userService = userService;
-        this.recommendationService = recommendationService;
-    }
 
 /*    @PostMapping
     public ResponseEntity<ApiResponse<User>> createUser(@Valid @RequestBody User user) {

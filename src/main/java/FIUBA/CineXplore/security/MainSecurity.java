@@ -1,9 +1,11 @@
 package FIUBA.CineXplore.security;
 
 import FIUBA.CineXplore.security.jwt.JwtAuthFilter;
+import FIUBA.CineXplore.security.jwt.JwtEntryPoint;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -25,6 +27,7 @@ import java.util.List;
 public class MainSecurity {
 
     private final JwtAuthFilter authFilter;
+    private final JwtEntryPoint jwtEntryPoint;
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
@@ -34,15 +37,15 @@ public class MainSecurity {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
+                .exceptionHandling(e -> e.authenticationEntryPoint(jwtEntryPoint))
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                                .requestMatchers("/auth").permitAll()
-                                .requestMatchers("/api/comments/**").authenticated()
-                                .requestMatchers("/api/user-movie-likes/**").authenticated()
-                                .requestMatchers("/api/user-movie-ratings/**").authenticated()
-//                        .requestMatchers(HttpMethod.GET, "/api").permitAll()
-                                .anyRequest().permitAll()
+//                                .requestMatchers("/admin/**").hasRole("ADMIN")
+                                .requestMatchers("/auth/**").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/actors", "/api/movies", "/api/genres",
+                                        "/api/directors").permitAll()
+                                .anyRequest().authenticated()
                 )
                 .sessionManagement(sessionManager -> sessionManager
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))

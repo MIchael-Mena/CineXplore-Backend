@@ -3,25 +3,28 @@ package FIUBA.CineXplore.security.Util;
 import FIUBA.CineXplore.security.model.Role;
 import FIUBA.CineXplore.security.model.RoleName;
 import FIUBA.CineXplore.security.service.RoleService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 @Component
+@AllArgsConstructor
 public class CreateRoles implements CommandLineRunner {
 
-    @Autowired
-    RoleService roleService;
+
+    private final RoleService roleService;
 
     @Override
     public void run(String... args) throws Exception {
-        if (!roleService.existsByRoleName(RoleName.ADMIN)) {
-            Role rolAdmin = new Role(RoleName.ADMIN);
-            roleService.save(rolAdmin);
-        }
-        if (!roleService.existsByRoleName(RoleName.USER)) {
-            Role rolUser = new Role(RoleName.USER);
-            roleService.save(rolUser);
+        createRoleIfNotExists(RoleName.ADMIN);
+        createRoleIfNotExists(RoleName.USER);
+    }
+
+    private void createRoleIfNotExists(RoleName roleName) {
+        if (!roleService.existsByRoleName(roleName)) {
+            Role role = new Role(roleName);
+            roleService.save(role);
+//            System.out.println("Rol creado: " + roleName);
         }
     }
 

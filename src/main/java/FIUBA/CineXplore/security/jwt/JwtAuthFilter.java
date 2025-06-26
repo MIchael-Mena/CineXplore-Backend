@@ -6,6 +6,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,6 +25,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtProvider jwtProvider;
 
+    private final static Logger logger = LoggerFactory.getLogger(JwtAuthFilter.class);
+
     @Override
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,
@@ -32,12 +36,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         this.authenticateToken(request);
         filterChain.doFilter(request, response);
     }
-
+    
     private void authenticateToken(@NonNull HttpServletRequest request) {
+        // Si ya hay una autenticación en el contexto, no hacemos nada
         if (SecurityContextHolder.getContext().getAuthentication() != null) {
             return;
         }
 
+        // Obtenemos el token del header Authorization
         String authHeader = request.getHeader("Authorization");
         String headerPrefix = "Bearer ";
         if (authHeader == null || !authHeader.startsWith(headerPrefix)) {
@@ -45,6 +51,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
         String token = authHeader.substring(headerPrefix.length());
 
+        // Intentamos extraer y verificar los datos del usuario desde el token
         jwtProvider.extractVerifiedUserData(token).ifPresent(userTokenData -> {
             List<SimpleGrantedAuthority> authorities = userTokenData.roles().stream()
                     .map(role -> new SimpleGrantedAuthority("ROLE_" + role)) // Prepend "ROLE_" to each role for Spring Security

@@ -1,6 +1,6 @@
 package FIUBA.CineXplore.security.jwt;
 
-import FIUBA.CineXplore.model.User;
+import FIUBA.CineXplore.security.model.UserCredentials;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
@@ -29,7 +29,7 @@ public class JwtProvider {
     }
 
     // Crea el token usando el email y los roles del usuario
-    public String createToken(User user) {
+    public String createToken(UserCredentials user) {
         List<String> roles = user.getRoles().stream()
                 .map(role -> role.getRoleName().name())
                 .collect(Collectors.toList());
@@ -37,8 +37,7 @@ public class JwtProvider {
         return Jwts.builder()
                 .subject(user.getEmail())
                 .issuedAt(new Date())
-                .setExpiration(new Date(new Date().getTime() + expiration * 1000))
-//                .expiration(new Date(System.currentTimeMillis() + expiration))
+                .expiration(new Date(System.currentTimeMillis() + expiration * 1000)) // Expira en 'expiration' segundos
                 .claim("roles", roles)
                 .signWith(getSigningKey(), Jwts.SIG.HS256) // Usar clave como mínimo 32 caracteres con SHA-256
                 .compact();
@@ -47,20 +46,34 @@ public class JwtProvider {
     // Extrae email y roles del token
     public Optional<UserTokenData> extractVerifiedUserData(String token) {
         try {
+            // Verifica el token y extrae los claims
             Claims claims = Jwts.parser()
                     .verifyWith(getSigningKey())
                     .build()
                     .parseSignedClaims(token)
                     .getPayload();
 
+            // Extrae el email y los roles del token
             String email = claims.getSubject();
             @SuppressWarnings("unchecked")
             List<String> roles = claims.get("roles", List.class);
 
+            // Si ambos valores son no nulos, devuelve un UserTokenData
             if (email != null && roles != null) {
                 return Optional.of(new UserTokenData(email, roles));
             }
-        } catch (Exception ignored) {
+        } catch (io.jsonwebtoken.MalformedJwtException e) {
+            throw new RuntimeException("El token proporcionado no es válido o está mal formado");
+        } catch (io.jsonwebtoken.UnsupportedJwtException e) {
+            throw new RuntimeException("El token no es compatible");
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("El token está vacío");
+        } catch (io.jsonwebtoken.security.SignatureException e) {
+            throw new RuntimeException("Fallo en la firma del token");
+        } catch (io.jsonwebtoken.ExpiredJwtException e) {
+            throw new RuntimeException("El token ha expirado");
+        } catch (Exception e) {
+            throw new RuntimeException("Error al procesar el token");
         }
         return Optional.empty();
     }

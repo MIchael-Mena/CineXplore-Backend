@@ -6,10 +6,10 @@ import FIUBA.CineXplore.security.jwt.JwtProvider;
 import FIUBA.CineXplore.security.model.MainUser;
 import FIUBA.CineXplore.security.model.Role;
 import FIUBA.CineXplore.security.model.RoleName;
+import FIUBA.CineXplore.security.model.UserCredentials;
 import FIUBA.CineXplore.security.repository.RoleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -29,7 +29,7 @@ public class AuthService implements UserDetailsService {
     private final JwtProvider jwtProvider;
 
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    public org.springframework.security.core.userdetails.UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         return userRepository.findByEmail(email)
                 .map(MainUser::new)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + email));
@@ -45,7 +45,7 @@ public class AuthService implements UserDetailsService {
         return createToken(user);
     }
 
-    public String createToken(User user) {
+    public String createToken(UserCredentials user) {
         return jwtProvider.createToken(user);
     }
 

@@ -2,6 +2,7 @@ package FIUBA.CineXplore.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,9 +28,9 @@ public class Actor {
     @Size(max = 150)
     @Column(length = 150, nullable = false)
     private String fullName;
-
-    // Descomentar si birthDate es obligatorio:
-    // @NotNull
+    
+    @NotNull
+    @Column(nullable = false, columnDefinition = "DATE")
     private LocalDate birthDate;
 
     @ManyToMany(mappedBy = "actors")

@@ -1,7 +1,7 @@
 package FIUBA.CineXplore.model;
 
-import FIUBA.CineXplore.security.model.BaseUser;
 import FIUBA.CineXplore.security.model.Role;
+import FIUBA.CineXplore.security.model.UserCredentials;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -22,7 +22,7 @@ import java.util.Set;
 @Getter
 @Setter
 @Entity
-public class User implements BaseUser {
+public class User implements UserCredentials {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;

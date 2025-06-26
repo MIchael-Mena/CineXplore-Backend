@@ -11,9 +11,9 @@ import java.util.stream.Collectors;
 
 @Getter
 public class MainUser implements UserDetails {
-    private final BaseUser user;
+    private final UserCredentials user;
 
-    public MainUser(BaseUser user) {
+    public MainUser(UserCredentials user) {
         this.user = user;
     }
 

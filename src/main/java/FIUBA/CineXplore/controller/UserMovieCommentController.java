@@ -4,6 +4,7 @@ import FIUBA.CineXplore.dto.ApiResponse;
 import FIUBA.CineXplore.model.UserMovieComment;
 import FIUBA.CineXplore.service.UserMovieCommentService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,13 +12,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/comments")
+@RequiredArgsConstructor
 public class UserMovieCommentController {
 
     private final UserMovieCommentService userMovieCommentService;
-
-    public UserMovieCommentController(UserMovieCommentService userMovieCommentService) {
-        this.userMovieCommentService = userMovieCommentService;
-    }
 
     @PostMapping
     public ResponseEntity<ApiResponse<UserMovieComment>> addComment(

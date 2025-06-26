@@ -2,7 +2,8 @@ package FIUBA.CineXplore.security.model;
 
 import java.util.Set;
 
-public interface BaseUser {
+// Cualquier nuevo tipo de usuario debe implementar esta interfaz
+public interface UserCredentials {
 
     String getUserName();
 
