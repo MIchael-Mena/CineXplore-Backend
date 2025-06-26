@@ -1,5 +1,6 @@
 package FIUBA.CineXplore.security.service;
 
+import FIUBA.CineXplore.exception.UserAlreadyExistsException;
 import FIUBA.CineXplore.model.User;
 import FIUBA.CineXplore.repository.UserRepository;
 import FIUBA.CineXplore.security.jwt.JwtProvider;
@@ -51,10 +52,10 @@ public class AuthService implements UserDetailsService {
 
     public User createUser(String username, String email, String password) {
         if (userRepository.existsByEmail(email)) {
-            throw new IllegalArgumentException("El email ya está registrado");
+            throw new UserAlreadyExistsException("El email ya está registrado: " + email);
         }
         if (userRepository.existsByUserName(username)) {
-            throw new IllegalArgumentException("El nombre de usuario ya está registrado");
+            throw new UserAlreadyExistsException("El nombre de usuario ya está registrado: " + username);
         }
 
         RoleName roleName = email.endsWith("@fi.uba.ar") ? RoleName.ADMIN : RoleName.USER;
