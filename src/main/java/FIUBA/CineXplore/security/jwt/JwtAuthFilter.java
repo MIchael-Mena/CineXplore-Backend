@@ -6,9 +6,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -24,8 +23,8 @@ import java.util.stream.Collectors;
 public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtProvider jwtProvider;
+    private final JwtEntryPoint jwtEntryPoint;
 
-    private final static Logger logger = LoggerFactory.getLogger(JwtAuthFilter.class);
 
     @Override
     protected void doFilterInternal(
@@ -33,10 +32,16 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
-        this.authenticateToken(request);
-        filterChain.doFilter(request, response);
+        try {
+            authenticateToken(request);
+            filterChain.doFilter(request, response);
+        } catch (AuthenticationException ex) {
+            SecurityContextHolder.clearContext();
+            // Llamar a JwtEntryPoint para mostrar el mensaje personalizado
+            jwtEntryPoint.commence(request, response, ex);
+        }
     }
-    
+
     private void authenticateToken(@NonNull HttpServletRequest request) {
         // Si ya hay una autenticación en el contexto, no hacemos nada
         if (SecurityContextHolder.getContext().getAuthentication() != null) {

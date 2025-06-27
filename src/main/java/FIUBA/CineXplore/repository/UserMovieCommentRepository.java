@@ -6,5 +6,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UserMovieCommentRepository extends JpaRepository<UserMovieComment, Long> {
-    
+
+    boolean existsByCommentIdAndUser_UserId(Long commentId, Long userId);
+
 }

@@ -12,10 +12,12 @@ import FIUBA.CineXplore.service.DirectorService;
 import FIUBA.CineXplore.service.GenreService;
 import FIUBA.CineXplore.service.MovieService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -24,6 +26,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/movies")
+@RequiredArgsConstructor
 public class MovieController {
 
     private final MovieService movieService;
@@ -31,25 +34,125 @@ public class MovieController {
     private final GenreService genreService;
     private final ActorService actorService;
 
-    public MovieController(MovieService movieService, DirectorService directorService,
-                           GenreService genreService, ActorService actorService) {
-        this.movieService = movieService;
-        this.directorService = directorService;
-        this.genreService = genreService;
-        this.actorService = actorService;
-    }
 
+    //    GET /api/movies                           # Todas las películas
+//    GET /api/movies?title=batman              # Películas con "batman" en el título
+//    GET /api/movies?genre=accion&minRating=7  # Películas de acción con rating >= 7
+//    GET /api/movies?director=nolan&releaseYear=2010  # Películas de Nolan del 2010
+//    GET /api/movies?minDuration=120&maxDuration=180  # Películas entre 2-3 horas
     @GetMapping
-    public ResponseEntity<ApiResponse<List<MovieResponseDTO>>> getAllMovies() {
-        List<Movie> movies = movieService.findAll();
-        List<MovieResponseDTO> dtos = movies.stream().map(this::toResponseDTO).collect(Collectors.toList());
+    public ResponseEntity<ApiResponse<List<MovieResponseDTO>>> getAllMovies(
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) String genre,
+            @RequestParam(required = false) String director,
+            @RequestParam(required = false) String actor,
+            @RequestParam(required = false) Integer minDuration,
+            @RequestParam(required = false) Integer maxDuration,
+            @RequestParam(required = false) Integer releaseYear,
+            @RequestParam(required = false) BigDecimal minRating) {
+
+        List<Movie> movies = movieService.searchMovies(title, genre, director, actor,
+                minDuration, maxDuration, releaseYear, minRating);
+        List<MovieResponseDTO> dtos = movies.stream()
+                .map(MovieResponseDTO::fromMovie)
+                .collect(Collectors.toList());
         return ResponseEntity.ok(new ApiResponse<>(200, "Lista de películas", dtos));
     }
-    
+
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<MovieResponseDTO>> getMovieById(@PathVariable Long id) {
         Movie movie = movieService.findById(id); // Lanza excepción si no existe
-        return ResponseEntity.ok(new ApiResponse<>(200, "Película encontrada", this.toResponseDTO(movie)));
+        return ResponseEntity.ok(new ApiResponse<>(200, "Película encontrada", MovieResponseDTO.fromMovie(movie)));
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/{movieId}/actors/{actorId}")
+    public ResponseEntity<ApiResponse<Void>> addActorToMovie(
+            @PathVariable Long movieId,
+            @PathVariable Long actorId) {
+        movieService.addActorToMovie(movieId, actorId);
+        return ResponseEntity.ok(
+                new ApiResponse<>(200, "Actor agregado a la película", null)
+        );
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/{movieId}/actors/{actorId}")
+    public ResponseEntity<ApiResponse<Void>> removeActorFromMovie(
+            @PathVariable Long movieId,
+            @PathVariable Long actorId) {
+        movieService.removeActorFromMovie(movieId, actorId);
+        return ResponseEntity.ok(
+                new ApiResponse<>(200, "Actor removido de la película", null)
+        );
+    }
+
+    @GetMapping("/{movieId}/actors")
+    public ResponseEntity<ApiResponse<Set<Actor>>> getMovieActors(@PathVariable Long movieId) {
+        Set<Actor> actors = movieService.getMovieActors(movieId);
+        return ResponseEntity.ok(
+                new ApiResponse<>(200, "Actores de la película", actors)
+        );
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/{movieId}/directors/{directorId}")
+    public ResponseEntity<ApiResponse<Void>> addDirectorToMovie(
+            @PathVariable Long movieId,
+            @PathVariable Long directorId) {
+        movieService.addDirectorToMovie(movieId, directorId);
+        return ResponseEntity.ok(
+                new ApiResponse<>(200, "Director agregado a la película", null)
+        );
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/{movieId}/directors/{directorId}")
+    public ResponseEntity<ApiResponse<Void>> removeDirectorFromMovie(
+            @PathVariable Long movieId,
+            @PathVariable Long directorId) {
+        movieService.removeDirectorFromMovie(movieId, directorId);
+        return ResponseEntity.ok(
+                new ApiResponse<>(200, "Director removido de la película", null)
+        );
+    }
+
+    @GetMapping("/{movieId}/directors")
+    public ResponseEntity<ApiResponse<Set<Director>>> getMovieDirectors(@PathVariable Long movieId) {
+        Set<Director> directors = movieService.getMovieDirectors(movieId);
+        return ResponseEntity.ok(
+                new ApiResponse<>(200, "Directores de la película", directors)
+        );
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/{movieId}/genres/{genreId}")
+    public ResponseEntity<ApiResponse<Void>> addGenreToMovie(
+            @PathVariable Long movieId,
+            @PathVariable Long genreId) {
+        movieService.addGenreToMovie(movieId, genreId);
+        return ResponseEntity.ok(
+                new ApiResponse<>(200, "Género agregado a la película", null)
+        );
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/{movieId}/genres/{genreId}")
+    public ResponseEntity<ApiResponse<Void>> removeGenreFromMovie(
+            @PathVariable Long movieId,
+            @PathVariable Long genreId) {
+        movieService.removeGenreFromMovie(movieId, genreId);
+        return ResponseEntity.ok(
+                new ApiResponse<>(200, "Género removido de la película", null)
+        );
+    }
+
+    @GetMapping("/{movieId}/genres")
+    public ResponseEntity<ApiResponse<Set<Genre>>> getMovieGenres(@PathVariable Long movieId) {
+        Set<Genre> genres = movieService.getMovieGenres(movieId);
+        return ResponseEntity.ok(
+                new ApiResponse<>(200, "Géneros de la película", genres)
+        );
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -60,25 +163,25 @@ public class MovieController {
             return ResponseEntity.status(400).body(new ApiResponse<>(400, "IDs de directores, géneros o actores inválidos", null));
         }
         Movie saved = movieService.save(movie);
-        return ResponseEntity.status(201).body(new ApiResponse<>(201, "Película creada", this.toResponseDTO(saved)));
+        return ResponseEntity.status(201).body(new ApiResponse<>(201, "Película creada", MovieResponseDTO.fromMovie(saved)));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<MovieResponseDTO>> updateMovie(@PathVariable Long id, @Valid @RequestBody MovieRequestDTO dto) {
-        Movie movie = movieService.findById(id); // Lanza excepción si no existe
+        Movie movie = movieService.findById(id);
         movie = mapDtoToMovie(movie, dto);
         if (movie == null) {
             return ResponseEntity.status(400).body(new ApiResponse<>(400, "IDs de directores, géneros o actores inválidos", null));
         }
         Movie updated = movieService.save(movie);
-        return ResponseEntity.ok(new ApiResponse<>(200, "Película actualizada", this.toResponseDTO(updated)));
+        return ResponseEntity.ok(new ApiResponse<>(200, "Película actualizada", MovieResponseDTO.fromMovie(updated)));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteMovie(@PathVariable Long id) {
-        movieService.deleteById(id); // Lanza excepción si no existe
+        movieService.deleteById(id);
         return ResponseEntity.ok(new ApiResponse<>(200, "Película eliminada", null));
     }
 
@@ -129,24 +232,4 @@ public class MovieController {
         return movie;
     }
 
-    private MovieResponseDTO toResponseDTO(Movie movie) {
-        MovieResponseDTO dto = new MovieResponseDTO();
-        dto.movieId = movie.getMovieId();
-        dto.title = movie.getTitle();
-        dto.description = movie.getDescription();
-        dto.durationMin = movie.getDurationMin();
-        dto.releaseDate = movie.getReleaseDate();
-        dto.averageRating = movie.getAverageRating();
-        dto.createdAt = movie.getCreatedAt();
-        dto.directors = movie.getDirectors() != null
-                ? movie.getDirectors().stream().map(Director::getFullName).collect(Collectors.toSet())
-                : Collections.emptySet();
-        dto.genres = movie.getGenres() != null
-                ? movie.getGenres().stream().map(Genre::getName).collect(Collectors.toSet())
-                : Collections.emptySet();
-        dto.actors = movie.getActors() != null
-                ? movie.getActors().stream().map(Actor::getFullName).collect(Collectors.toSet())
-                : Collections.emptySet();
-        return dto;
-    }
 }

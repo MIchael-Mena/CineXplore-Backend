@@ -2,10 +2,12 @@ package FIUBA.CineXplore.service;
 
 import FIUBA.CineXplore.exception.EntityNotFoundException;
 import FIUBA.CineXplore.model.Genre;
+import FIUBA.CineXplore.model.Movie;
 import FIUBA.CineXplore.repository.GenreRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class GenreService implements IGenericService<Genre> {
@@ -38,5 +40,10 @@ public class GenreService implements IGenericService<Genre> {
     @Override
     public List<Genre> findAll() {
         return genreRepository.findAll();
+    }
+
+    public Set<Movie> getGenreMovies(Long genreId) {
+        Genre genre = findById(genreId);
+        return genre.getMovies();
     }
 }

@@ -18,18 +18,16 @@ public class JwtEntryPoint implements AuthenticationEntryPoint {
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
-        logger.error("El usuario no está autenticado");
         this.handleAuthenticationErrorWithApiResponse(request, response, authException.getMessage());
     }
 
-    private void handleAuthenticationErrorWithApiResponse(HttpServletRequest request,
-                                                          HttpServletResponse response,
-                                                          String errorMessage) throws IOException {
+    public void handleAuthenticationErrorWithApiResponse(HttpServletRequest request,
+                                                         HttpServletResponse response,
+                                                         String errorMessage) throws IOException {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
-        // Usar el mensaje específico o uno por defecto
         String message = errorMessage != null ? errorMessage : "Acceso denegado - Se requiere autenticación";
 
         // Crear JSON manualmente para evitar problemas de serialización

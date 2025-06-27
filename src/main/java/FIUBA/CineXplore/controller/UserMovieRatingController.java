@@ -4,24 +4,23 @@ import FIUBA.CineXplore.dto.ApiResponse;
 import FIUBA.CineXplore.model.UserMovieRating;
 import FIUBA.CineXplore.service.MovieService;
 import FIUBA.CineXplore.service.UserMovieRatingService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/user-movie-ratings")
+@RequiredArgsConstructor
 public class UserMovieRatingController {
 
     private final UserMovieRatingService userMovieRatingService;
     private final MovieService movieService;
 
-    public UserMovieRatingController(UserMovieRatingService userMovieRatingService, MovieService movieService) {
-        this.userMovieRatingService = userMovieRatingService;
-        this.movieService = movieService;
-    }
-
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN') or authentication.principal.id == #userId")
     public ResponseEntity<ApiResponse<UserMovieRating>> rateMovie(
             @RequestParam Long userId,
             @RequestParam Long movieId,
@@ -32,6 +31,7 @@ public class UserMovieRatingController {
     }
 
     @DeleteMapping
+    @PreAuthorize("hasRole('ADMIN') or authentication.principal.id == #userId")
     public ResponseEntity<ApiResponse<Void>> deleteRating(
             @RequestParam Long userId,
             @RequestParam Long movieId) {
@@ -39,6 +39,7 @@ public class UserMovieRatingController {
         return ResponseEntity.ok(new ApiResponse<>(200, "Rating eliminado", null));
     }
 
+    @PreAuthorize("hasRole('ADMIN') or authentication.principal.id == #userId")
     @GetMapping("/user/{userId}")
     public ResponseEntity<ApiResponse<List<UserMovieRating>>> getRatingsByUser(@PathVariable Long userId) {
         List<UserMovieRating> ratings = userMovieRatingService.getRatingsByUser(userId);

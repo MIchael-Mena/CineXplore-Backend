@@ -43,8 +43,15 @@ public class MainSecurity {
                 .authorizeHttpRequests(auth -> auth
 //                                .requestMatchers("/admin/**").hasRole("ADMIN")
                                 .requestMatchers("/auth/**").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/api/actors", "/api/movies", "/api/genres",
-                                        "/api/directors").permitAll()
+                                .requestMatchers(HttpMethod.GET,
+                                        "/api/actors", "/api/actors/**",
+                                        "/api/movies", "/api/movies/**",
+                                        "/api/genres", "/api/genres/**",
+                                        "/api/directors", "/api/directors/**",
+                                        "/api/user-movie-ratings/movie/*",
+                                        "/api/comments/movie/*",
+                                        "/api/user-movie-likes/movie/*"
+                                ).permitAll()
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(sessionManager -> sessionManager

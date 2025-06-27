@@ -2,23 +2,23 @@ package FIUBA.CineXplore.controller;
 
 import FIUBA.CineXplore.dto.ApiResponse;
 import FIUBA.CineXplore.model.Actor;
+import FIUBA.CineXplore.model.Movie;
 import FIUBA.CineXplore.service.ActorService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
-@PreAuthorize("hasRole('ADMIN')")
+
 @RestController
 @RequestMapping("/api/actors")
+@RequiredArgsConstructor
 public class ActorController {
 
     private final ActorService actorService;
-
-    public ActorController(ActorService actorService) {
-        this.actorService = actorService;
-    }
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<Actor>>> getAllActors() {
@@ -30,6 +30,14 @@ public class ActorController {
     public ResponseEntity<ApiResponse<Actor>> getActorById(@PathVariable Long id) {
         Actor actor = actorService.findById(id);
         return ResponseEntity.ok(new ApiResponse<>(200, "Actor encontrado", actor));
+    }
+
+    @GetMapping("/{actorId}/movies")
+    public ResponseEntity<ApiResponse<Set<Movie>>> getActorMovies(@PathVariable Long actorId) {
+        Set<Movie> movies = actorService.getActorMovies(actorId);
+        return ResponseEntity.ok(
+                new ApiResponse<>(200, "Películas del actor", movies)
+        );
     }
 
     @PreAuthorize("hasRole('ADMIN')")

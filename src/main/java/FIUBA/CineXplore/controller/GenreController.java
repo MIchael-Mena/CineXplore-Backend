@@ -2,28 +2,36 @@ package FIUBA.CineXplore.controller;
 
 import FIUBA.CineXplore.dto.ApiResponse;
 import FIUBA.CineXplore.model.Genre;
+import FIUBA.CineXplore.model.Movie;
 import FIUBA.CineXplore.service.GenreService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/genres")
+@RequiredArgsConstructor
 public class GenreController {
 
     private final GenreService genreService;
-
-    public GenreController(GenreService genreService) {
-        this.genreService = genreService;
-    }
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<Genre>>> getAllGenres() {
         List<Genre> genres = genreService.findAll();
         return ResponseEntity.ok(
                 new ApiResponse<>(200, "Lista de géneros", genres)
+        );
+    }
+
+    @GetMapping("/{genreId}/movies")
+    public ResponseEntity<ApiResponse<Set<Movie>>> getGenreMovies(@PathVariable Long genreId) {
+        Set<Movie> movies = genreService.getGenreMovies(genreId);
+        return ResponseEntity.ok(
+                new ApiResponse<>(200, "Películas del género", movies)
         );
     }
 

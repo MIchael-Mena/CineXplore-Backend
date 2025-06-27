@@ -6,6 +6,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
@@ -63,17 +64,17 @@ public class JwtProvider {
                 return Optional.of(new UserTokenData(email, roles));
             }
         } catch (io.jsonwebtoken.MalformedJwtException e) {
-            throw new RuntimeException("El token proporcionado no es válido o está mal formado");
+            throw new AuthenticationServiceException("El token proporcionado no es válido o está mal formado");
         } catch (io.jsonwebtoken.UnsupportedJwtException e) {
-            throw new RuntimeException("El token no es compatible");
+            throw new AuthenticationServiceException("El token no es compatible");
         } catch (IllegalArgumentException e) {
-            throw new RuntimeException("El token está vacío");
+            throw new AuthenticationServiceException("El token está vacío");
         } catch (io.jsonwebtoken.security.SignatureException e) {
-            throw new RuntimeException("Fallo en la firma del token");
+            throw new AuthenticationServiceException("Fallo en la firma del token");
         } catch (io.jsonwebtoken.ExpiredJwtException e) {
-            throw new RuntimeException("El token ha expirado");
+            throw new AuthenticationServiceException("El token ha expirado");
         } catch (Exception e) {
-            throw new RuntimeException("Error al procesar el token");
+            throw new AuthenticationServiceException("Error al procesar el token: " + e.getMessage());
         }
         return Optional.empty();
     }

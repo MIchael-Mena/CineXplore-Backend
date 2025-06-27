@@ -2,10 +2,12 @@ package FIUBA.CineXplore.service;
 
 import FIUBA.CineXplore.exception.EntityNotFoundException;
 import FIUBA.CineXplore.model.Director;
+import FIUBA.CineXplore.model.Movie;
 import FIUBA.CineXplore.repository.DirectorRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class DirectorService implements IGenericService<Director> {
@@ -38,5 +40,10 @@ public class DirectorService implements IGenericService<Director> {
     @Override
     public List<Director> findAll() {
         return directorRepository.findAll();
+    }
+
+    public Set<Movie> getDirectorMovies(Long directorId) {
+        Director director = findById(directorId);
+        return director.getMovies();
     }
 }

@@ -6,6 +6,7 @@ import FIUBA.CineXplore.service.UserMovieCommentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,6 +19,7 @@ public class UserMovieCommentController {
     private final UserMovieCommentService userMovieCommentService;
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN') or authentication.principal.id == #userId")
     public ResponseEntity<ApiResponse<UserMovieComment>> addComment(
             @RequestParam Long userId,
             @RequestParam Long movieId,
@@ -27,12 +29,14 @@ public class UserMovieCommentController {
     }
 
     @DeleteMapping("/{commentId}")
+    @PreAuthorize("hasRole('ADMIN') or @userMovieCommentService.isCommentOwner(#commentId, authentication.principal.id)")
     public ResponseEntity<ApiResponse<Void>> deleteComment(@PathVariable Long commentId) {
         userMovieCommentService.deleteComment(commentId);
         return ResponseEntity.ok(new ApiResponse<>(200, "Comentario eliminado", null));
     }
 
     @GetMapping("/user/{userId}")
+    @PreAuthorize("hasRole('ADMIN') or authentication.principal.id == #userId")
     public ResponseEntity<ApiResponse<List<UserMovieComment>>> getCommentsByUser(@PathVariable Long userId) {
         List<UserMovieComment> comments = userMovieCommentService.getCommentsByUser(userId);
         return ResponseEntity.ok(new ApiResponse<>(200, "Comentarios del usuario", comments));
@@ -45,6 +49,7 @@ public class UserMovieCommentController {
     }
 
     @PutMapping("/{commentId}")
+    @PreAuthorize("hasRole('ADMIN') or @userMovieCommentService.isCommentOwner(#commentId, authentication.principal.id)")
     public ResponseEntity<ApiResponse<UserMovieComment>> updateComment(
             @PathVariable Long commentId,
             @Valid @RequestBody String commentText) {

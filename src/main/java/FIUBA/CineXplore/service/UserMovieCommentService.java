@@ -77,4 +77,8 @@ public class UserMovieCommentService implements IUserMovieCommentService {
         comment.setCreatedAt(LocalDateTime.now());
         return userMovieCommentRepository.save(comment);
     }
+
+    public boolean isCommentOwner(Long commentId, Long userId) {
+        return userMovieCommentRepository.existsByCommentIdAndUser_UserId(commentId, userId);
+    }
 }
