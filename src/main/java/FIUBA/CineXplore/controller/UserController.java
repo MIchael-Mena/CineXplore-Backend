@@ -5,7 +5,6 @@ import FIUBA.CineXplore.model.Movie;
 import FIUBA.CineXplore.model.User;
 import FIUBA.CineXplore.service.RecommendationService;
 import FIUBA.CineXplore.service.UserService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,6 +27,7 @@ public class UserController {
         return ResponseEntity.ok(new ApiResponse<>(200, "Usuario creado exitosamente", created));
     }*/
 
+    @PreAuthorize("hasRole('ADMIN') or authentication.principal.id == #id")
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<User>> getUserById(@PathVariable Long id) {
         User user = userService.findById(id);
@@ -42,6 +42,7 @@ public class UserController {
     }
 
 
+/*    @PreAuthorize("hasRole('ADMIN') or authentication.principal.id == #userId")
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<User>> updateUser(@PathVariable Long id, @Valid @RequestBody User userDetails) {
         User user = userService.findById(id);
@@ -49,9 +50,9 @@ public class UserController {
         user.setEmail(userDetails.getEmail());
         User updated = userService.save(user);
         return ResponseEntity.ok(new ApiResponse<>(200, "Usuario actualizado exitosamente", updated));
-    }
+    }*/
 
-    // TODO: Implementar seguridad para que solo ADMIN pueda eliminar usuarios
+    @PreAuthorize("hasRole('ADMIN') or authentication.principal.id == #id")
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteUser(@PathVariable Long id) {
         userService.deleteById(id);
@@ -59,6 +60,7 @@ public class UserController {
     }
 
 
+    @PreAuthorize("hasRole('ADMIN') or authentication.principal.id == #id")
     @GetMapping("/{id}/recommendations")
     public ResponseEntity<ApiResponse<List<Movie>>> getRecommendations(@PathVariable Long id) {
         List<Movie> recommendations = recommendationService.recommendMoviesForUser(id);
