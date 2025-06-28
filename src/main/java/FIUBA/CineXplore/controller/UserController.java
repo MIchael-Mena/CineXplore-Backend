@@ -41,7 +41,6 @@ public class UserController {
         return ResponseEntity.ok(new ApiResponse<>(200, "Lista de usuarios", users));
     }
 
-
 /*    @PreAuthorize("hasRole('ADMIN') or authentication.principal.id == #userId")
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<User>> updateUser(@PathVariable Long id, @Valid @RequestBody User userDetails) {
