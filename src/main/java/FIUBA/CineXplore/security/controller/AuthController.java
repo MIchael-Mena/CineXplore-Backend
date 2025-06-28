@@ -8,12 +8,10 @@ import FIUBA.CineXplore.security.dto.TokenDTO;
 import FIUBA.CineXplore.security.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
@@ -38,6 +36,14 @@ public class AuthController {
         TokenDTO tokenDTO = new TokenDTO(token);
         ApiResponse<TokenDTO> response = new ApiResponse<>(201, "Usuario registrado", tokenDTO);
         return ResponseEntity.status(201).body(response);
+    }
+
+    @GetMapping("/refresh-token")
+    public ResponseEntity<ApiResponse<TokenDTO>> refreshToken(@RequestHeader(HttpHeaders.AUTHORIZATION) String authHeader) {
+        String newToken = authService.refreshToken(authHeader);
+        TokenDTO tokenDTO = new TokenDTO(newToken);
+        ApiResponse<TokenDTO> response = new ApiResponse<>(200, "Token renovado exitosamente", tokenDTO);
+        return ResponseEntity.ok(response);
     }
 
 }

@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,7 +44,7 @@ public class JwtProvider {
     }
 
     // Extrae email y roles del token
-    public Optional<UserTokenData> extractVerifiedUserData(String token) {
+    public UserTokenData extractVerifiedUserData(String token) {
         try {
             // Verifica el token y extrae los claims
             Claims claims = Jwts.parser()
@@ -61,22 +60,17 @@ public class JwtProvider {
 
             // Si ambos valores son no nulos, devuelve un UserTokenData
             if (email != null && roles != null) {
-                return Optional.of(new UserTokenData(email, roles));
+                return new UserTokenData(email, roles);
+            } else {
+                throw new AuthenticationServiceException("El token no contiene los datos necesarios.");
             }
-        } catch (io.jsonwebtoken.MalformedJwtException e) {
-            throw new AuthenticationServiceException("El token proporcionado no es válido o está mal formado");
-        } catch (io.jsonwebtoken.UnsupportedJwtException e) {
-            throw new AuthenticationServiceException("El token no es compatible");
+        } catch (io.jsonwebtoken.JwtException e) {
+            // Captura todas las excepciones de JJWT y usa su mensaje descriptivo.
+            throw new AuthenticationServiceException(e.getMessage(), e);
         } catch (IllegalArgumentException e) {
-            throw new AuthenticationServiceException("El token está vacío");
-        } catch (io.jsonwebtoken.security.SignatureException e) {
-            throw new AuthenticationServiceException("Fallo en la firma del token");
-        } catch (io.jsonwebtoken.ExpiredJwtException e) {
-            throw new AuthenticationServiceException("El token ha expirado");
-        } catch (Exception e) {
-            throw new AuthenticationServiceException("Error al procesar el token: " + e.getMessage());
+            // Específico para cuando el token es nulo o vacío.
+            throw new AuthenticationServiceException("El token no puede ser nulo o vacío.", e);
         }
-        return Optional.empty();
     }
 
     private SecretKey getSigningKey() {

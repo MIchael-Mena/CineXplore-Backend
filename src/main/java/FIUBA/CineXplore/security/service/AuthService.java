@@ -69,4 +69,24 @@ public class AuthService implements UserDetailsService {
         user.setRoles(Set.of(userRole));
         return userRepository.save(user);
     }
+
+    public String refreshToken(String authHeader) {
+        final String HEADER_PREFIX = "Bearer ";
+
+        // 1. Validar el formato del encabezado y extraer el token
+        if (authHeader == null || !authHeader.startsWith(HEADER_PREFIX)) {
+            throw new BadCredentialsException("Formato de token inválido. Se requiere el prefijo 'Bearer '.");
+        }
+        String token = authHeader.substring(HEADER_PREFIX.length());
+
+        // 2. Validar y extraer datos del token. Si no es válido, JwtProvider lanzará una excepción (lo atrapa el manager de excepciones global).
+        String email = jwtProvider.extractVerifiedUserData(token).email();
+
+        // 3. Buscar al usuario en la base de datos para asegurar que todavía existe.
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado para el token proporcionado"));
+
+        // 4. Generar y devolver un nuevo token para el usuario.
+        return createToken(user);
+    }
 }
