@@ -39,4 +39,9 @@ public class UserService implements IGenericService<User> {
     public List<User> findAll() {
         return userRepository.findAll();
     }
+
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("Usuario con email", email));
+    }
 }
