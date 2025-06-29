@@ -28,6 +28,11 @@ public class User implements UserCredentials {
     private Long userId;
 
     @NotBlank
+    @Size(max = 255)
+    @Column(length = 255)
+    private String avatarUrl;
+
+    @NotBlank
     @Size(min = 3, max = 50)
     @Column(length = 50, unique = true, nullable = false)
     private String userName;
