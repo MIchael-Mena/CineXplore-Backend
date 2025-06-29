@@ -2,7 +2,11 @@ package FIUBA.CineXplore.security.controller;
 
 import FIUBA.CineXplore.dto.ApiResponse;
 import FIUBA.CineXplore.model.User;
-import FIUBA.CineXplore.security.dto.*;
+import FIUBA.CineXplore.security.dto.AuthResponseDTO;
+import FIUBA.CineXplore.security.dto.LoginRequest;
+import FIUBA.CineXplore.security.dto.SignUpRequest;
+import FIUBA.CineXplore.security.dto.UserDTO;
+import FIUBA.CineXplore.security.jwt.JwtProvider;
 import FIUBA.CineXplore.security.service.AuthService;
 import FIUBA.CineXplore.service.UserService;
 import jakarta.validation.Valid;
@@ -20,6 +24,7 @@ public class AuthController {
 
     private final AuthService authService;
     private final UserService userService;
+    private final JwtProvider jwtProvider;
 
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<AuthResponseDTO>> login(@Valid @RequestBody LoginRequest request) {
@@ -38,10 +43,10 @@ public class AuthController {
     }
 
     @GetMapping("/refresh-token")
-    public ResponseEntity<ApiResponse<TokenDTO>> refreshToken(@RequestHeader(HttpHeaders.AUTHORIZATION) String authHeader) {
+    public ResponseEntity<ApiResponse<AuthResponseDTO>> refreshToken(@RequestHeader(HttpHeaders.AUTHORIZATION) String authHeader) {
         String newToken = authService.refreshToken(authHeader);
-        TokenDTO tokenDTO = new TokenDTO(newToken);
-        ApiResponse<TokenDTO> response = new ApiResponse<>(200, "Token renovado exitosamente", tokenDTO);
+        User user = userService.getUserByEmail(jwtProvider.extractVerifiedUserData(newToken).email());
+        ApiResponse<AuthResponseDTO> response = buildLoginResponse(user, newToken, 200, "Token renovado exitosamente");
         return ResponseEntity.ok(response);
     }
 
