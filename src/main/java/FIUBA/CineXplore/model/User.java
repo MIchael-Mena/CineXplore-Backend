@@ -25,7 +25,7 @@ public class User implements UserCredentials {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
 
-    @NotEmpty // Se puede permitir un usuario sin avatar
+    //    @NotEmpty // Se puede permitir un usuario sin avatar
     @Size(max = 255)
     @Column(length = 255)
     private String avatarUrl;

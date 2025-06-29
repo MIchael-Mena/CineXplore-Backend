@@ -32,6 +32,7 @@ public class JwtEntryPoint implements AuthenticationEntryPoint {
 
         // Crear JSON manualmente para evitar problemas de serialización
         String jsonResponse = String.format(
+                "false",
                 "{\"timestamp\":\"%s\",\"status\":%d,\"message\":\"%s\",\"data\":null}",
                 java.time.LocalDateTime.now(),
                 HttpServletResponse.SC_UNAUTHORIZED,

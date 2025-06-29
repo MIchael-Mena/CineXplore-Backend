@@ -1,6 +1,9 @@
 package FIUBA.CineXplore.security.dto;
 
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -8,13 +11,16 @@ import java.time.LocalDate;
 @Data
 public class UserSignUpRequest {
     @NotBlank
+    @Size(min = 3, max = 50)
     private String username;
-    @Email
+
     @NotBlank
+    @Email
+    @Size(max = 100)
     private String email;
 
-    @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$", message = "La contraseña debe tener al menos 8 caracteres, incluyendo letras y números")
     @NotBlank
+    @Size(max = 255)
     private String password;
 
     @Size(max = 255)
