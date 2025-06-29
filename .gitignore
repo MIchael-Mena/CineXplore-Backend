@@ -10,7 +10,7 @@ target/
 
 #out/
 .mvn/
-src/main/resources/secret.properties
+src/main/resources/secrewt.properties
 
 ### STS ###
 .apt_generated
