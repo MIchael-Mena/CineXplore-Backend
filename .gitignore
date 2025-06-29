@@ -5,12 +5,12 @@ target/
 !**/src/test/**/target/
 
 #Docker
-./data
+data/
 .env
 
 #out/
 .mvn/
-src/main/resources/secrewt.properties
+src/main/resources/secret.properties
 
 ### STS ###
 .apt_generated
