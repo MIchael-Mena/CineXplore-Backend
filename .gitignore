@@ -4,6 +4,10 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+#Docker
+./data
+.env
+
 #out/
 .mvn/
 src/main/resources/secret.properties
