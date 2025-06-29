@@ -3,15 +3,13 @@ package FIUBA.CineXplore.model;
 import FIUBA.CineXplore.security.model.Role;
 import FIUBA.CineXplore.security.model.UserCredentials;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -27,7 +25,7 @@ public class User implements UserCredentials {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
 
-    @NotBlank
+    @NotEmpty // Se puede permitir un usuario sin avatar
     @Size(max = 255)
     @Column(length = 255)
     private String avatarUrl;
@@ -52,6 +50,14 @@ public class User implements UserCredentials {
     @NotNull
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
+
+    @Past // Fecha de nacimiento debe ser en el pasado
+    @Column
+    private LocalDate birthDate; // "birthDate": "1990-01-01"
+
+    @Size(max = 100)
+    @Column(length = 100)
+    private String country;
 
     @OneToMany(mappedBy = "user")
     private Set<UserMovieLike> likes;

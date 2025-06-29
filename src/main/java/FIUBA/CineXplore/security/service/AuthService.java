@@ -3,6 +3,7 @@ package FIUBA.CineXplore.security.service;
 import FIUBA.CineXplore.exception.UserAlreadyExistsException;
 import FIUBA.CineXplore.model.User;
 import FIUBA.CineXplore.repository.UserRepository;
+import FIUBA.CineXplore.security.dto.UserSignUpRequest;
 import FIUBA.CineXplore.security.jwt.JwtProvider;
 import FIUBA.CineXplore.security.model.MainUser;
 import FIUBA.CineXplore.security.model.Role;
@@ -50,7 +51,10 @@ public class AuthService implements UserDetailsService {
         return jwtProvider.createToken(user);
     }
 
-    public User createUser(String username, String email, String password) {
+    public User createUser(UserSignUpRequest request) {
+        String username = request.getUsername();
+        String email = request.getEmail();
+        String password = request.getPassword();
         if (userRepository.existsByEmail(email)) {
             throw new UserAlreadyExistsException("El email ya está registrado: " + email);
         }
@@ -66,6 +70,9 @@ public class AuthService implements UserDetailsService {
         user.setUserName(username);
         user.setEmail(email);
         user.setPasswordHash(passwordEncoder.encode(password));
+        user.setAvatarUrl(request.getAvatarUrl());
+        user.setBirthDate(request.getBirthDate());
+        user.setCountry(request.getCountry());
         user.setRoles(Set.of(userRole));
         return userRepository.save(user);
     }

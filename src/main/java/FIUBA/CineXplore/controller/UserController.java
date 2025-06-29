@@ -3,7 +3,7 @@ package FIUBA.CineXplore.controller;
 import FIUBA.CineXplore.dto.ApiResponse;
 import FIUBA.CineXplore.model.Movie;
 import FIUBA.CineXplore.model.User;
-import FIUBA.CineXplore.security.dto.UserDTO;
+import FIUBA.CineXplore.security.dto.UserResponseDTO;
 import FIUBA.CineXplore.service.RecommendationService;
 import FIUBA.CineXplore.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -30,18 +30,18 @@ public class UserController {
 
     @PreAuthorize("hasRole('ADMIN') or authentication.principal.id == #id")
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<UserDTO>> getUserById(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<UserResponseDTO>> getUserById(@PathVariable Long id) {
         User user = userService.findById(id);
-        UserDTO userDTO = UserDTO.fromUser(user);
-        return ResponseEntity.ok(new ApiResponse<>(200, "Usuario encontrado", userDTO));
+        UserResponseDTO userResponseDTO = UserResponseDTO.fromUser(user);
+        return ResponseEntity.ok(new ApiResponse<>(200, "Usuario encontrado", userResponseDTO));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
-    public ResponseEntity<ApiResponse<List<UserDTO>>> getAllUsers() {
+    public ResponseEntity<ApiResponse<List<UserResponseDTO>>> getAllUsers() {
         List<User> users = userService.findAll();
-        List<UserDTO> usersDTOs = users.stream()
-                .map(UserDTO::fromUser)
+        List<UserResponseDTO> usersDTOs = users.stream()
+                .map(UserResponseDTO::fromUser)
                 .toList();
         return ResponseEntity.ok(new ApiResponse<>(200, "Lista de usuarios", usersDTOs));
     }

@@ -4,8 +4,8 @@ import FIUBA.CineXplore.dto.ApiResponse;
 import FIUBA.CineXplore.model.User;
 import FIUBA.CineXplore.security.dto.AuthResponseDTO;
 import FIUBA.CineXplore.security.dto.LoginRequest;
-import FIUBA.CineXplore.security.dto.SignUpRequest;
-import FIUBA.CineXplore.security.dto.UserDTO;
+import FIUBA.CineXplore.security.dto.UserResponseDTO;
+import FIUBA.CineXplore.security.dto.UserSignUpRequest;
 import FIUBA.CineXplore.security.jwt.JwtProvider;
 import FIUBA.CineXplore.security.service.AuthService;
 import FIUBA.CineXplore.service.UserService;
@@ -35,8 +35,8 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse<AuthResponseDTO>> register(@Valid @RequestBody SignUpRequest request) {
-        User user = authService.createUser(request.getUsername(), request.getEmail(), request.getPassword());
+    public ResponseEntity<ApiResponse<AuthResponseDTO>> register(@Valid @RequestBody UserSignUpRequest request) {
+        User user = authService.createUser(request);
         String token = authService.createToken(user);
         ApiResponse<AuthResponseDTO> response = buildLoginResponse(user, token, 201, "Usuario registrado exitosamente");
         return ResponseEntity.status(201).body(response);
@@ -51,10 +51,10 @@ public class AuthController {
     }
 
     private ApiResponse<AuthResponseDTO> buildLoginResponse(User user, String token, int status, String message) {
-        UserDTO userDTO = UserDTO.fromUser(user);
+        UserResponseDTO userResponseDTO = UserResponseDTO.fromUser(user);
         AuthResponseDTO authResponseDTO = new AuthResponseDTO();
         authResponseDTO.setToken(token);
-        authResponseDTO.setUser(userDTO);
+        authResponseDTO.setUser(userResponseDTO);
         return new ApiResponse<>(status, message, authResponseDTO);
     }
 
